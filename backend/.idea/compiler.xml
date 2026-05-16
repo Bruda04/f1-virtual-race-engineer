@@ -10,7 +10,7 @@
         <module name="kjar" />
         <module name="service" />
       </profile>
-      <profile name="Annotation profile for model" enabled="true">
+      <profile name="Annotation profile for f1-virtual-race-engineer" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
