@@ -54,10 +54,10 @@ public class RaceSessionContext {
         currentTime = targetTime;
     }
 
-    public void clearDerivedFacts(Set<Class<?>> inputFactTypes) {
+    public void clearGeneratedFactsForReevaluation(Set<Class<?>> factTypesToKeep) {
         kieSession.getObjects().stream()
                 .filter(fact -> fact.getClass().getPackageName().startsWith("com.ftn.sbnz.f1.model.facts"))
-                .filter(fact -> !inputFactTypes.contains(fact.getClass()))
+                .filter(fact -> !factTypesToKeep.contains(fact.getClass()))
                 .map(kieSession::getFactHandle)
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList())

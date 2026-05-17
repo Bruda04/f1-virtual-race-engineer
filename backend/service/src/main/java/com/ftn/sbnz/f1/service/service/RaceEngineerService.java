@@ -31,6 +31,7 @@ import com.ftn.sbnz.f1.service.dto.RaceSessionUpdateRequest;
 import java.util.*;
 import java.time.Instant;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import com.ftn.sbnz.f1.service.model.EventEnvelope;
 import com.ftn.sbnz.f1.service.model.RaceSessionContext;
@@ -45,30 +46,8 @@ import org.springframework.stereotype.Service;
 public class RaceEngineerService {
 
     private static final String SESSION_NAME = "f1KSession";
-    private static final Set<Class<?>> INPUT_FACT_TYPES = Set.of(
-            RaceState.class,
-            CarTelemetry.class,
-            FuelStatus.class,
-            EngineStatus.class,
-            BrakeStatus.class,
-            TyreStatus.class,
-            WeatherStatus.class,
-            TrackStatus.class,
-            CompetitorStatus.class,
-            DriverReport.class,
-            SuspensionStatus.class,
-            TrackSafetyParameters.class,
-            TrackStrategyParameters.class,
-            TrackProfile.class,
-            TelemetryEvent.class,
-            TyrePressureEvent.class,
-            TemperatureEvent.class,
-            LapTimeEvent.class,
-            GForceEvent.class,
-            SpeedEvent.class
-    );
 
-    private static final Set<Class<?>> DERIVED_FACT_TYPES = Set.of(
+    private static final Set<Class<?>> SESSION_STATE_FACT_TYPES = Set.of(
             RaceState.class,
             CarTelemetry.class,
             FuelStatus.class,
@@ -79,11 +58,7 @@ public class RaceEngineerService {
             TrackStatus.class,
             CompetitorStatus.class,
             DriverReport.class,
-            SuspensionStatus.class,
-            TrackSafetyParameters.class,
-            TrackStrategyParameters.class,
-            TrackProfile.class,
-            Recommendation.class
+            SuspensionStatus.class
     );
 
     private static final Set<Class<?>> EVENT_FACT_TYPES = Set.of(
@@ -94,6 +69,29 @@ public class RaceEngineerService {
             GForceEvent.class,
             SpeedEvent.class
     );
+
+    private static final Set<Class<?>> TRACK_CONFIGURATION_FACT_TYPES = Set.of(
+            TrackSafetyParameters.class,
+            TrackStrategyParameters.class,
+            TrackProfile.class
+    );
+
+    private static final Set<Class<?>> FACT_TYPES_TO_KEEP_ON_UPDATE = Stream
+            .concat(
+                    SESSION_STATE_FACT_TYPES.stream(),
+                    TRACK_CONFIGURATION_FACT_TYPES.stream()
+            )
+            .collect(Collectors.toUnmodifiableSet());
+
+    private static final Set<Class<?>> INPUT_FACT_TYPES =
+            Stream.of(
+                    SESSION_STATE_FACT_TYPES,
+                    TRACK_CONFIGURATION_FACT_TYPES,
+                    EVENT_FACT_TYPES
+            )
+            .flatMap(Set::stream)
+            .collect(Collectors.toUnmodifiableSet());
+
 
     private final KieContainer kieContainer;
     private final TrackThresholdService trackThresholdService;
@@ -140,7 +138,7 @@ public class RaceEngineerService {
 
         insertEvents(context, request);
 
-        context.clearDerivedFacts(DERIVED_FACT_TYPES);
+        context.clearGeneratedFactsForReevaluation(FACT_TYPES_TO_KEEP_ON_UPDATE);
 
         context.kieSession().fireAllRules();
 
