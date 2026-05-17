@@ -7,8 +7,11 @@ import org.kie.api.time.SessionPseudoClock;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 public class RaceSessionContext {
     private final KieSession kieSession;
@@ -49,5 +52,15 @@ public class RaceSessionContext {
         long millis = Duration.between(currentTime, targetTime).toMillis();
         clock.advanceTime(millis, TimeUnit.MILLISECONDS);
         currentTime = targetTime;
+    }
+
+    public void clearDerivedFacts(Set<Class<?>> inputFactTypes) {
+        kieSession.getObjects().stream()
+                .filter(fact -> fact.getClass().getPackageName().startsWith("com.ftn.sbnz.f1.model.facts"))
+                .filter(fact -> !inputFactTypes.contains(fact.getClass()))
+                .map(kieSession::getFactHandle)
+                .filter(Objects::nonNull)
+                .collect(Collectors.toList())
+                .forEach(kieSession::delete);
     }
 }

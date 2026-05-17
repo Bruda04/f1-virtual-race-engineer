@@ -113,6 +113,8 @@ public class RaceEngineerService {
 
         insertEvents(context, request);
 
+        context.clearDerivedFacts(INPUT_FACT_TYPES);
+
         context.kieSession().fireAllRules();
 
         return responseFrom(context.kieSession());
