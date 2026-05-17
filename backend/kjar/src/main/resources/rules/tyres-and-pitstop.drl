@@ -1,0 +1,73 @@
+package rules;
+
+import com.ftn.sbnz.f1.model.facts.CheapPitStopOpportunity;
+import com.ftn.sbnz.f1.model.facts.CompetitorStatus;
+import com.ftn.sbnz.f1.model.facts.PaceDropDetected;
+import com.ftn.sbnz.f1.model.facts.PitWindowAvailable;
+import com.ftn.sbnz.f1.model.facts.PotentialPuncture;
+import com.ftn.sbnz.f1.model.facts.TrackSafetyParameters;
+import com.ftn.sbnz.f1.model.facts.TrackStrategyParameters;
+import com.ftn.sbnz.f1.model.facts.TyreStatus;
+import com.ftn.sbnz.f1.model.facts.TyresCold;
+import com.ftn.sbnz.f1.model.facts.TyresOldEnoughForChange;
+import com.ftn.sbnz.f1.model.facts.TyresOverheated;
+import com.ftn.sbnz.f1.model.facts.TyresWorn;
+
+rule "Detect worn tyres"
+when
+    $params: TrackStrategyParameters($maxLaps: maxLapsOnTyres)
+    TyreStatus(lapsOnSet > $maxLaps)
+    not TyresWorn()
+then
+    insert(new TyresWorn());
+end
+
+rule "Detect tyres old enough for safety car pit"
+when
+    $params: TrackStrategyParameters($minLaps: minLapsOnTyresForSafetyCarPit)
+    TyreStatus(lapsOnSet >= $minLaps)
+    not TyresOldEnoughForChange()
+then
+    insert(new TyresOldEnoughForChange());
+end
+
+rule "Detect cold tyres"
+when
+    TyreStatus(averageTemperatureCelsius < 70.0)
+    not TyresCold()
+then
+    insert(new TyresCold());
+end
+
+rule "Detect overheated tyres"
+when
+    $params: TrackSafetyParameters($criticalTemperature: criticalTyreTemperatureCelsius)
+    TyreStatus(averageTemperatureCelsius > $criticalTemperature)
+    not TyresOverheated()
+then
+    insert(new TyresOverheated());
+end
+
+rule "Detect regular pit window"
+when
+    CompetitorStatus(wouldExitAheadAfterPit == true)
+    not PitWindowAvailable()
+then
+    insert(new PitWindowAvailable());
+end
+
+rule "Promote cheap pit stop to pit window"
+when
+    CheapPitStopOpportunity()
+    not PitWindowAvailable()
+then
+    insert(new PitWindowAvailable());
+end
+
+rule "Mark puncture as pit window"
+when
+    PotentialPuncture()
+    not PitWindowAvailable()
+then
+    insert(new PitWindowAvailable());
+end

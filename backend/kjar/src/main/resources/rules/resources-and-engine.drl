@@ -1,0 +1,121 @@
+package rules;
+
+import com.ftn.sbnz.f1.model.facts.AttackModeBlocked;
+import com.ftn.sbnz.f1.model.facts.BrakeOverheating;
+import com.ftn.sbnz.f1.model.facts.BrakeStatus;
+import com.ftn.sbnz.f1.model.facts.EngineCoolingRequired;
+import com.ftn.sbnz.f1.model.facts.EngineCoolingWithCleanAirInstruction;
+import com.ftn.sbnz.f1.model.facts.ExtremeFuelSavingStrategy;
+import com.ftn.sbnz.f1.model.facts.DefensivePriority;
+import com.ftn.sbnz.f1.model.facts.FuelCritical;
+import com.ftn.sbnz.f1.model.facts.FuelRiskHigh;
+import com.ftn.sbnz.f1.model.facts.FuelSavingDefensiveStrategy;
+import com.ftn.sbnz.f1.model.facts.FuelStatus;
+import com.ftn.sbnz.f1.model.facts.IncreasedFailureRisk;
+import com.ftn.sbnz.f1.model.facts.EngineOverheating;
+import com.ftn.sbnz.f1.model.facts.EngineStatus;
+import com.ftn.sbnz.f1.model.facts.CompetitorStatus;
+import com.ftn.sbnz.f1.model.facts.RaceState;
+import com.ftn.sbnz.f1.model.facts.TrackSafetyParameters;
+import com.ftn.sbnz.f1.model.facts.TrackNeutralized;
+
+rule "Detect critical fuel consumption"
+when
+    $params: TrackSafetyParameters($criticalFuelDelta: criticalFuelConsumptionDeltaKgPerLap)
+    RaceState(remainingLaps > 10)
+    FuelStatus(consumptionDeltaKgPerLap > $criticalFuelDelta)
+    not FuelCritical()
+then
+    insert(new FuelCritical());
+end
+
+rule "Detect high fuel risk before final phase"
+when
+    FuelCritical()
+    RaceState(remainingLaps > 10)
+    not FuelRiskHigh()
+then
+    insert(new FuelRiskHigh());
+end
+
+rule "Prioritize defending position while fuel is critical"
+when
+    FuelCritical()
+    CompetitorStatus(gapBehindSeconds < 1.5)
+    not DefensivePriority()
+then
+    insert(new DefensivePriority());
+end
+
+rule "Activate fuel saving defensive strategy"
+when
+    FuelCritical()
+    DefensivePriority()
+    not FuelSavingDefensiveStrategy()
+then
+    insert(new FuelSavingDefensiveStrategy());
+end
+
+rule "Use neutralized track for extreme fuel saving"
+when
+    TrackNeutralized()
+    FuelRiskHigh()
+    not ExtremeFuelSavingStrategy()
+then
+    insert(new ExtremeFuelSavingStrategy());
+end
+
+rule "Detect engine overheating"
+when
+    $params: TrackSafetyParameters($maxEngineTemperature: maxEngineTemperatureCelsius)
+    EngineStatus(temperatureCelsius > $maxEngineTemperature)
+    not EngineOverheating()
+then
+    insert(new EngineOverheating());
+end
+
+rule "Require engine cooling outside critical phase"
+when
+    EngineOverheating()
+    RaceState(criticalPhase == false)
+    not EngineCoolingRequired()
+then
+    insert(new EngineCoolingRequired());
+end
+
+rule "Require clean air for cooling when in dirty air"
+when
+    EngineOverheating()
+    RaceState(criticalPhase == false)
+    EngineStatus(inDirtyAir == true)
+    not EngineCoolingWithCleanAirInstruction()
+then
+    insert(new EngineCoolingWithCleanAirInstruction());
+end
+
+rule "Keep performance but mark failure risk in critical phase"
+when
+    EngineOverheating()
+    RaceState(criticalPhase == true)
+    not IncreasedFailureRisk()
+then
+    insert(new IncreasedFailureRisk());
+end
+
+rule "Block attack mode while overheated in dirty air"
+when
+    EngineOverheating()
+    EngineStatus(inDirtyAir == true, attemptingOvertake == true)
+    not AttackModeBlocked()
+then
+    insert(new AttackModeBlocked());
+end
+
+rule "Detect brake overheating"
+when
+    $params: TrackSafetyParameters($criticalBrakeTemperature: criticalBrakeTemperatureCelsius)
+    BrakeStatus(averageTemperatureCelsius > $criticalBrakeTemperature)
+    not BrakeOverheating()
+then
+    insert(new BrakeOverheating());
+end

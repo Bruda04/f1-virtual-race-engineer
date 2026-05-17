@@ -1,0 +1,28 @@
+template header
+trackName
+criticalTyreTemperatureCelsius
+criticalBrakeTemperatureCelsius
+maxEngineTemperatureCelsius
+criticalFuelConsumptionDeltaKgPerLap
+
+package rules;
+
+import com.ftn.sbnz.f1.model.facts.TrackProfile;
+import com.ftn.sbnz.f1.model.facts.TrackSafetyParameters;
+
+template "Create safety parameters for track"
+
+rule "Create @{trackName} safety parameters"
+when
+    TrackProfile(name == "@{trackName}")
+    not TrackSafetyParameters()
+then
+    insert(new TrackSafetyParameters(
+        @{criticalTyreTemperatureCelsius},
+        @{criticalBrakeTemperatureCelsius},
+        @{maxEngineTemperatureCelsius},
+        @{criticalFuelConsumptionDeltaKgPerLap}
+    ));
+end
+
+end template

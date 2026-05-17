@@ -1,0 +1,5 @@
+trackName,criticalTyreTemperatureCelsius,criticalBrakeTemperatureCelsius,maxEngineTemperatureCelsius,criticalFuelConsumptionDeltaKgPerLap
+Default,105.0,900.0,115.0,0.10
+HighDegradationTrack,100.0,925.0,113.0,0.12
+LowDegradationTrack,110.0,880.0,116.0,0.08
+HighAltitudeTrack,104.0,910.0,110.0,0.14

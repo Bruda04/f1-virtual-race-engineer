@@ -1,0 +1,102 @@
+package rules;
+
+import com.ftn.sbnz.f1.model.events.GForceEvent;
+import com.ftn.sbnz.f1.model.events.LapTimeEvent;
+import com.ftn.sbnz.f1.model.events.SpeedEvent;
+import com.ftn.sbnz.f1.model.events.TelemetryEvent;
+import com.ftn.sbnz.f1.model.events.TemperatureEvent;
+import com.ftn.sbnz.f1.model.events.TyrePressureEvent;
+import com.ftn.sbnz.f1.model.facts.BrakeOverheating;
+import com.ftn.sbnz.f1.model.facts.EngineOverheating;
+import com.ftn.sbnz.f1.model.facts.IncidentDetected;
+import com.ftn.sbnz.f1.model.facts.PaceDropDetected;
+import com.ftn.sbnz.f1.model.facts.PotentialPuncture;
+import com.ftn.sbnz.f1.model.facts.TrackSafetyParameters;
+import com.ftn.sbnz.f1.model.facts.TrackStrategyParameters;
+import com.ftn.sbnz.f1.model.facts.TyrePressureAverage;
+import com.ftn.sbnz.f1.model.facts.TyresOverheated;
+
+declare TelemetryEvent
+    @role(event)
+    @expires(30s)
+end
+
+declare TyrePressureEvent
+    @role(event)
+    @expires(30s)
+end
+
+declare TemperatureEvent
+    @role(event)
+    @expires(10s)
+end
+
+declare LapTimeEvent
+    @role(event)
+    @expires(10m)
+end
+
+declare GForceEvent
+    @role(event)
+    @expires(2s)
+end
+
+declare SpeedEvent
+    @role(event)
+    @expires(2s)
+end
+
+rule "Aggregate tyre pressure over 30 seconds"
+when
+    accumulate(
+        TyrePressureEvent($pressure: pressureBar) over window:time(30s);
+        $count: count($pressure),
+        $averagePressure: average($pressure)
+    )
+    eval($count > 0)
+    not TyrePressureAverage()
+then
+    insert(new TyrePressureAverage($averagePressure.doubleValue(), $count.longValue()));
+end
+
+rule "Detect potential puncture from pressure drop"
+when
+    $start: TyrePressureEvent($startTime: timestamp, $startPressure: pressureBar) over window:time(10s)
+    TyrePressureEvent(
+        $endTime: timestamp,
+        pressureBar < ($startPressure - 0.2),
+        eval($endTime != null && $startTime != null && $endTime.isAfter($startTime))
+    ) over window:time(10s)
+    not PotentialPuncture()
+then
+    insert(new PotentialPuncture());
+end
+
+rule "Detect pace drop from last laps"
+when
+    $params: TrackStrategyParameters($paceDropThreshold: paceDropThresholdSeconds)
+    accumulate(
+        LapTimeEvent($lapTime: lapTimeSeconds) over window:length(3);
+        $count: count($lapTime),
+        $minLap: min($lapTime),
+        $maxLap: max($lapTime)
+    )
+    eval($count >= 3 && (($maxLap.doubleValue() - $minLap.doubleValue()) >= $paceDropThreshold))
+    not PaceDropDetected()
+then
+    insert(new PaceDropDetected());
+end
+
+rule "Detect brake overheating from three-lap average"
+when
+    $params: TrackSafetyParameters($criticalBrakeTemperature: criticalBrakeTemperatureCelsius)
+    accumulate(
+        TemperatureEvent($temperature: brakeTemperatureCelsius) over window:length(3);
+        $count: count($temperature),
+        $averageTemperature: average($temperature)
+    )
+    eval($count >= 3 && $averageTemperature.doubleValue() > $criticalBrakeTemperature)
+    not BrakeOverheating()
+then
+    insert(new BrakeOverheating());
+end

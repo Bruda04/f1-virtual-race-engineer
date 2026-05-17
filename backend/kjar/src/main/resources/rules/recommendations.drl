@@ -190,3 +190,182 @@ then
     ));
 end
 
+rule "Block attack mode recommendation"
+    salience 100
+when
+    AttackModeBlocked()
+    not Recommendation(type == RecommendationType.ENGINE_MODE)
+then
+    insert(new Recommendation(
+        RecommendationType.ENGINE_MODE,
+        Urgency.HIGH,
+        "Do not use attack mode until engine temperature stabilizes.",
+        EngineMode.COOLING,
+        ErsMode.SAVE
+    ));
+end
+
+rule "Recommend engine cooling"
+    salience 60
+when
+    EngineCoolingRequired()
+    not Recommendation(type == RecommendationType.ENGINE_MODE)
+then
+    insert(new Recommendation(
+        RecommendationType.ENGINE_MODE,
+        Urgency.MEDIUM,
+        "Switch to engine cooling mode.",
+        EngineMode.COOLING,
+        ErsMode.SAVE
+    ));
+end
+
+rule "Recommend restart attack mode"
+    salience 40
+when
+    RestartAttackMode()
+    not Recommendation(type == RecommendationType.ENGINE_MODE)
+then
+    insert(new Recommendation(
+        RecommendationType.ENGINE_MODE,
+        Urgency.HIGH,
+        "Green flag after neutralization; prepare for restart attack.",
+        EngineMode.ATTACK,
+        ErsMode.OVERTAKE
+    ));
+end
+
+rule "Recommend ERS overtake"
+    salience 100
+when
+    ErsOvertakeAvailable()
+    not Recommendation(type == RecommendationType.ERS_MODE)
+then
+    insert(new Recommendation(
+        RecommendationType.ERS_MODE,
+        Urgency.HIGH,
+        "Battery level is high; full ERS power available for overtake.",
+        EngineMode.ATTACK,
+        ErsMode.FULL_POWER
+    ));
+end
+
+rule "Recommend blue flag compliance"
+    salience 100
+when
+    BlueFlagInstructionRequired()
+    not Recommendation(type == RecommendationType.DRIVER_INSTRUCTION)
+then
+    insert(new Recommendation(
+        RecommendationType.DRIVER_INSTRUCTION,
+        Urgency.HIGH,
+        "Blue flag active; yield to the lapping car.",
+        EngineMode.NORMAL,
+        ErsMode.SAVE
+    ));
+end
+
+rule "Recommend clean air for cooling"
+    salience 80
+when
+    EngineCoolingWithCleanAirInstruction()
+    not Recommendation(type == RecommendationType.DRIVER_INSTRUCTION)
+then
+    insert(new Recommendation(
+        RecommendationType.DRIVER_INSTRUCTION,
+        Urgency.HIGH,
+        "Move out of dirty air to improve engine cooling.",
+        EngineMode.COOLING,
+        ErsMode.SAVE
+    ));
+end
+
+rule "Recommend tyre warmup"
+    salience 40
+when
+    TyresCold()
+    not Recommendation(type == RecommendationType.DRIVER_INSTRUCTION)
+then
+    insert(new Recommendation(
+        RecommendationType.DRIVER_INSTRUCTION,
+        Urgency.MEDIUM,
+        "Increase tyre warmup maneuvers.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Recommend final lap full defense"
+    salience 100
+when
+    FullResourceDefense()
+    not Recommendation(type == RecommendationType.STRATEGY)
+then
+    insert(new Recommendation(
+        RecommendationType.STRATEGY,
+        Urgency.CRITICAL,
+        "Final lap defense; deploy all available resources.",
+        EngineMode.DEFEND,
+        ErsMode.FULL_POWER
+    ));
+end
+
+rule "Recommend extreme fuel saving"
+    salience 80
+when
+    ExtremeFuelSavingStrategy()
+    not Recommendation(type == RecommendationType.STRATEGY)
+then
+    insert(new Recommendation(
+        RecommendationType.STRATEGY,
+        Urgency.HIGH,
+        "Activate extreme fuel-saving mode and follow the prescribed pace.",
+        EngineMode.SAVE,
+        ErsMode.SAVE
+    ));
+end
+
+rule "Recommend fuel saving defensive strategy"
+    salience 70
+when
+    FuelSavingDefensiveStrategy()
+    not Recommendation(type == RecommendationType.STRATEGY)
+then
+    insert(new Recommendation(
+        RecommendationType.STRATEGY,
+        Urgency.HIGH,
+        "Defend position while saving fuel; use ERS only on straights.",
+        EngineMode.SAVE,
+        ErsMode.STRAIGHTS_ONLY
+    ));
+end
+
+rule "Recommend delaying wet pit"
+    salience 40
+when
+    DelayPitStopRecommended()
+    not Recommendation(type == RecommendationType.STRATEGY)
+then
+    insert(new Recommendation(
+        RecommendationType.STRATEGY,
+        Urgency.MEDIUM,
+        "Track is wet but drying; delay pit if tyre condition allows.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Recommend DRS and overtake mode"
+    salience 20
+when
+    OvertakeOpportunity()
+    not Recommendation(type == RecommendationType.STRATEGY)
+then
+    insert(new Recommendation(
+        RecommendationType.STRATEGY,
+        Urgency.MEDIUM,
+        "Gap ahead is under one second; DRS and overtake mode are available.",
+        EngineMode.ATTACK,
+        ErsMode.NORMAL
+    ));
+end
