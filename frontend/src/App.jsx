@@ -14,6 +14,8 @@ const driverIssues = ['NONE', 'STEERING_VIBRATION', 'BRAKE_PROBLEM', 'LOSS_OF_PO
 const nowIso = () => new Date().toISOString()
 
 const defaultForm = {
+  sessionStartTime: nowIso(),
+  eventTimestamp: nowIso(),
   trackProfile: 'Default',
   currentLap: 20,
   totalLaps: 58,
@@ -101,13 +103,19 @@ function numberValue(value) {
   return Number(value)
 }
 
-function eventTime(offsetSeconds = 0) {
-  return new Date(Date.now() + offsetSeconds * 1000).toISOString()
+function timestampValue(value) {
+  const parsed = new Date(value)
+  return Number.isNaN(parsed.getTime()) ? nowIso() : parsed.toISOString()
+}
+
+function eventTime(baseTimestamp, offsetSeconds = 0) {
+  return new Date(new Date(timestampValue(baseTimestamp)).getTime() + offsetSeconds * 1000).toISOString()
 }
 
 function buildUpdatePayload(form) {
   const baseLap = numberValue(form.currentLap)
   const lapTime = 82 + Math.max(0, numberValue(form.lapsOnSet) - 20) * 0.08
+  const baseEventTimestamp = timestampValue(form.eventTimestamp)
 
   return {
     raceState: {
@@ -167,38 +175,48 @@ function buildUpdatePayload(form) {
       asymmetricCorneringGForces: form.asymmetricCorneringGForces,
     },
     lapTimeEvents: [
-      { timestamp: eventTime(-130), lapNumber: Math.max(1, baseLap - 2), lapTimeSeconds: lapTime },
-      { timestamp: eventTime(-65), lapNumber: Math.max(1, baseLap - 1), lapTimeSeconds: lapTime + 0.35 },
-      { timestamp: eventTime(0), lapNumber: baseLap, lapTimeSeconds: lapTime + 0.85 },
+      { timestamp: eventTime(baseEventTimestamp, -130), lapNumber: Math.max(1, baseLap - 2), lapTimeSeconds: lapTime },
+      { timestamp: eventTime(baseEventTimestamp, -65), lapNumber: Math.max(1, baseLap - 1), lapTimeSeconds: lapTime + 0.35 },
+      { timestamp: eventTime(baseEventTimestamp, 0), lapNumber: baseLap, lapTimeSeconds: lapTime + 0.85 },
     ],
     tyrePressureEvents: [
-      { timestamp: eventTime(-20), pressureBar: numberValue(form.tyrePressureBar) + 0.18 },
-      { timestamp: eventTime(-10), pressureBar: numberValue(form.tyrePressureBar) + 0.04 },
-      { timestamp: eventTime(0), pressureBar: numberValue(form.tyrePressureBar) - 0.08 },
+      { timestamp: eventTime(baseEventTimestamp, -20), pressureBar: numberValue(form.tyrePressureBar) + 0.18 },
+      { timestamp: eventTime(baseEventTimestamp, -10), pressureBar: numberValue(form.tyrePressureBar) + 0.04 },
+      { timestamp: eventTime(baseEventTimestamp, 0), pressureBar: numberValue(form.tyrePressureBar) - 0.08 },
     ],
     temperatureEvents: [
       {
-        timestamp: eventTime(-8),
+        timestamp: eventTime(baseEventTimestamp, -8),
         brakeTemperatureCelsius: numberValue(form.brakeTemperatureCelsius) - 8,
         engineTemperatureCelsius: numberValue(form.engineTemperatureCelsius) - 2,
         tyreTemperatureCelsius: numberValue(form.tyreTemperatureCelsius) - 2,
       },
       {
-        timestamp: eventTime(-4),
+        timestamp: eventTime(baseEventTimestamp, -4),
         brakeTemperatureCelsius: numberValue(form.brakeTemperatureCelsius) - 3,
         engineTemperatureCelsius: numberValue(form.engineTemperatureCelsius),
         tyreTemperatureCelsius: numberValue(form.tyreTemperatureCelsius),
       },
       {
-        timestamp: eventTime(0),
+        timestamp: eventTime(baseEventTimestamp, 0),
         brakeTemperatureCelsius: numberValue(form.brakeTemperatureCelsius),
         engineTemperatureCelsius: numberValue(form.engineTemperatureCelsius),
         tyreTemperatureCelsius: numberValue(form.tyreTemperatureCelsius),
       },
     ],
-    gForceEvents: [],
-    speedEvents: [],
-    telemetryEvents: [],
+    gForceEvents: [
+      {
+        timestamp: eventTime(baseEventTimestamp, 0),
+        lateralGForce: numberValue(form.lateralGForce),
+        longitudinalGForce: numberValue(form.longitudinalGForce),
+      },
+    ],
+    speedEvents: [
+      {
+        timestamp: eventTime(baseEventTimestamp, 1),
+        speedKmh: numberValue(form.speedKmh),
+      },
+    ],
   }
 }
 
@@ -378,7 +396,7 @@ function App() {
     runAction(async () => {
       const result = await apiRequest('/api/race/start', {
         method: 'POST',
-        body: JSON.stringify({ trackProfile: form.trackProfile, startTime: nowIso() }),
+        body: JSON.stringify({ trackProfile: form.trackProfile, startTime: timestampValue(form.sessionStartTime) }),
       })
       setSession(result)
       setResponse({ recommendations: [], derivedFacts: [] })
@@ -438,6 +456,8 @@ function App() {
               <span>{session?.currentTime ? new Date(session.currentTime).toLocaleTimeString() : 'Not started'}</span>
             </div>
             <SelectField label="Track profile" value={form.trackProfile} onChange={setField('trackProfile')} options={trackProfiles} />
+            <Field label="Session start ISO" value={form.sessionStartTime} onChange={setField('sessionStartTime')} type="text" />
+            <Field label="Event timestamp ISO" value={form.eventTimestamp} onChange={setField('eventTimestamp')} type="text" />
             <div className="split">
               <Field label="Current lap" value={form.currentLap} onChange={setField('currentLap')} min="0" step="1" />
               <Field label="Total laps" value={form.totalLaps} onChange={setField('totalLaps')} min="1" step="1" />

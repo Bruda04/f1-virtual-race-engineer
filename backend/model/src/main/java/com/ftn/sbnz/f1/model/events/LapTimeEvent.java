@@ -12,4 +12,8 @@ public class LapTimeEvent {
     private Instant timestamp;
     private int lapNumber;
     private double lapTimeSeconds;
+
+    public long getTimestampMillis() {
+        return timestamp == null ? 0 : timestamp.toEpochMilli();
+    }
 }

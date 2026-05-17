@@ -11,4 +11,8 @@ import lombok.NoArgsConstructor;
 public class TyrePressureEvent {
     private Instant timestamp;
     private double pressureBar;
+
+    public long getTimestampMillis() {
+        return timestamp == null ? 0 : timestamp.toEpochMilli();
+    }
 }

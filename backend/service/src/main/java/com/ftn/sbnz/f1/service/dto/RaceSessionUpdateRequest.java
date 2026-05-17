@@ -1,9 +1,9 @@
 package com.ftn.sbnz.f1.service.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.ftn.sbnz.f1.model.events.GForceEvent;
 import com.ftn.sbnz.f1.model.events.LapTimeEvent;
 import com.ftn.sbnz.f1.model.events.SpeedEvent;
-import com.ftn.sbnz.f1.model.events.TelemetryEvent;
 import com.ftn.sbnz.f1.model.events.TemperatureEvent;
 import com.ftn.sbnz.f1.model.events.TyrePressureEvent;
 import com.ftn.sbnz.f1.model.facts.*;
@@ -29,10 +29,10 @@ public class RaceSessionUpdateRequest {
     private CompetitorStatus competitorStatus;
     private DriverReport driverReport;
     private SuspensionStatus suspensionStatus;
-    private List<TelemetryEvent> telemetryEvents;
     private List<TyrePressureEvent> tyrePressureEvents;
     private List<TemperatureEvent> temperatureEvents;
     private List<LapTimeEvent> lapTimeEvents;
+    @JsonProperty("gForceEvents")
     private List<GForceEvent> gForceEvents;
     private List<SpeedEvent> speedEvents;
 

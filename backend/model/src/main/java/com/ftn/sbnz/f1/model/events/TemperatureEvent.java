@@ -13,4 +13,8 @@ public class TemperatureEvent {
     private double brakeTemperatureCelsius;
     private double engineTemperatureCelsius;
     private double tyreTemperatureCelsius;
+
+    public long getTimestampMillis() {
+        return timestamp == null ? 0 : timestamp.toEpochMilli();
+    }
 }

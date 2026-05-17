@@ -11,4 +11,8 @@ import lombok.NoArgsConstructor;
 public class SpeedEvent {
     private Instant timestamp;
     private double speedKmh;
+
+    public long getTimestampMillis() {
+        return timestamp == null ? 0 : timestamp.toEpochMilli();
+    }
 }

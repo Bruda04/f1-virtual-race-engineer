@@ -12,4 +12,8 @@ public class GForceEvent {
     private Instant timestamp;
     private double lateralGForce;
     private double longitudinalGForce;
+
+    public long getTimestampMillis() {
+        return timestamp == null ? 0 : timestamp.toEpochMilli();
+    }
 }

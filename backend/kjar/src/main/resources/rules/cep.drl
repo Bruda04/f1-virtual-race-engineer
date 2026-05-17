@@ -3,7 +3,6 @@ package rules;
 import com.ftn.sbnz.f1.model.events.GForceEvent;
 import com.ftn.sbnz.f1.model.events.LapTimeEvent;
 import com.ftn.sbnz.f1.model.events.SpeedEvent;
-import com.ftn.sbnz.f1.model.events.TelemetryEvent;
 import com.ftn.sbnz.f1.model.events.TemperatureEvent;
 import com.ftn.sbnz.f1.model.events.TyrePressureEvent;
 import com.ftn.sbnz.f1.model.facts.BrakeOverheating;
@@ -16,33 +15,33 @@ import com.ftn.sbnz.f1.model.facts.TrackStrategyParameters;
 import com.ftn.sbnz.f1.model.facts.TyrePressureAverage;
 import com.ftn.sbnz.f1.model.facts.TyresOverheated;
 
-declare TelemetryEvent
-    @role(event)
-    @expires(30s)
-end
-
 declare TyrePressureEvent
     @role(event)
+    @timestamp(timestampMillis)
     @expires(30s)
 end
 
 declare TemperatureEvent
     @role(event)
+    @timestamp(timestampMillis)
     @expires(10s)
 end
 
 declare LapTimeEvent
     @role(event)
+    @timestamp(timestampMillis)
     @expires(10m)
 end
 
 declare GForceEvent
     @role(event)
+    @timestamp(timestampMillis)
     @expires(2s)
 end
 
 declare SpeedEvent
     @role(event)
+    @timestamp(timestampMillis)
     @expires(2s)
 end
 
