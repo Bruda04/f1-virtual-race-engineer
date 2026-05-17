@@ -16,7 +16,7 @@ when
     TrackStatus(safetyCarActive == true || virtualSafetyCarActive == true)
     not TrackNeutralized()
 then
-    insertLogical(new TrackNeutralized());
+    insert(new TrackNeutralized());
 end
 
 rule "Use neutralized track for critical fuel saving"
@@ -25,7 +25,7 @@ when
     FuelCritical()
     not ExtremeFuelSavingStrategy()
 then
-    insertLogical(new ExtremeFuelSavingStrategy());
+    insert(new ExtremeFuelSavingStrategy());
 end
 
 rule "Use neutralized track for cheap pit stop"
@@ -34,7 +34,7 @@ when
     TyresOldEnoughForChange()
     not CheapPitStopOpportunity()
 then
-    insertLogical(new CheapPitStopOpportunity());
+    insert(new CheapPitStopOpportunity());
 end
 
 rule "Detect penalty risk under yellow flag"
@@ -42,7 +42,7 @@ when
     TrackStatus(flagStatus == FlagStatus.YELLOW, driverSlowedForYellowFlag == false)
     not PenaltyRisk()
 then
-    insertLogical(new PenaltyRisk());
+    insert(new PenaltyRisk());
 end
 
 rule "Detect restart attack mode after safety car"
@@ -50,7 +50,7 @@ when
     TrackStatus(flagStatus == FlagStatus.GREEN, safetyCarRecentlyEnded == true)
     not RestartAttackMode()
 then
-    insertLogical(new RestartAttackMode());
+    insert(new RestartAttackMode());
 end
 
 rule "Detect blue flag instruction"
@@ -58,5 +58,5 @@ when
     TrackStatus(flagStatus == FlagStatus.BLUE)
     not BlueFlagInstructionRequired()
 then
-    insertLogical(new BlueFlagInstructionRequired());
+    insert(new BlueFlagInstructionRequired());
 end

@@ -19,7 +19,7 @@ when
     TyreStatus(lapsOnSet > $maxLaps)
     not TyresWorn()
 then
-    insertLogical(new TyresWorn());
+    insert(new TyresWorn());
 end
 
 rule "Detect tyres old enough for safety car pit"
@@ -28,7 +28,7 @@ when
     TyreStatus(lapsOnSet >= $minLaps)
     not TyresOldEnoughForChange()
 then
-    insertLogical(new TyresOldEnoughForChange());
+    insert(new TyresOldEnoughForChange());
 end
 
 rule "Detect cold tyres"
@@ -36,7 +36,7 @@ when
     TyreStatus(averageTemperatureCelsius < 70.0)
     not TyresCold()
 then
-    insertLogical(new TyresCold());
+    insert(new TyresCold());
 end
 
 rule "Detect overheated tyres"
@@ -45,7 +45,7 @@ when
     TyreStatus(averageTemperatureCelsius > $criticalTemperature)
     not TyresOverheated()
 then
-    insertLogical(new TyresOverheated());
+    insert(new TyresOverheated());
 end
 
 rule "Detect regular pit window"
@@ -53,7 +53,7 @@ when
     CompetitorStatus(wouldExitAheadAfterPit == true)
     not PitWindowAvailable()
 then
-    insertLogical(new PitWindowAvailable());
+    insert(new PitWindowAvailable());
 end
 
 rule "Promote cheap pit stop to pit window"
@@ -61,7 +61,7 @@ when
     CheapPitStopOpportunity()
     not PitWindowAvailable()
 then
-    insertLogical(new PitWindowAvailable());
+    insert(new PitWindowAvailable());
 end
 
 rule "Mark puncture as pit window"
@@ -69,5 +69,5 @@ when
     PotentialPuncture()
     not PitWindowAvailable()
 then
-    insertLogical(new PitWindowAvailable());
+    insert(new PitWindowAvailable());
 end

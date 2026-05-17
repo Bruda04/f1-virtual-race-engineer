@@ -24,7 +24,7 @@ when
     TrackStatus(flagStatus == FlagStatus.GREEN)
     not OvertakeOpportunity()
 then
-    insertLogical(new OvertakeOpportunity());
+    insert(new OvertakeOpportunity());
 end
 
 rule "Detect high battery"
@@ -32,7 +32,7 @@ when
     CarTelemetry(ersBatteryPercentage > 50)
     not BatteryHigh()
 then
-    insertLogical(new BatteryHigh());
+    insert(new BatteryHigh());
 end
 
 rule "Enable ERS overtake"
@@ -41,7 +41,7 @@ when
     BatteryHigh()
     not ErsOvertakeAvailable()
 then
-    insertLogical(new ErsOvertakeAvailable());
+    insert(new ErsOvertakeAvailable());
 end
 
 rule "Require suspension check after steering vibration"
@@ -49,7 +49,7 @@ when
     DriverReport(issue == DriverIssue.STEERING_VIBRATION)
     not SuspensionCheckRequired()
 then
-    insertLogical(new SuspensionCheckRequired());
+    insert(new SuspensionCheckRequired());
 end
 
 rule "Detect possible suspension damage"
@@ -58,7 +58,7 @@ when
     SuspensionStatus(asymmetricCorneringGForces == true)
     not PossibleSuspensionDamage()
 then
-    insertLogical(new PossibleSuspensionDamage());
+    insert(new PossibleSuspensionDamage());
 end
 
 rule "Use all resources on final lap defense"
@@ -67,7 +67,7 @@ when
     CompetitorStatus(driverBehindVeryClose == true)
     not FullResourceDefense()
 then
-    insertLogical(new FullResourceDefense());
+    insert(new FullResourceDefense());
 end
 
 rule "Detect weak car performance"
@@ -76,5 +76,5 @@ when
     PaceDropDetected()
     not WeakCarPerformance()
 then
-    insertLogical(new WeakCarPerformance());
+    insert(new WeakCarPerformance());
 end
