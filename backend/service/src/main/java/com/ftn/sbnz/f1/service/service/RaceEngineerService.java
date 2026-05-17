@@ -68,6 +68,33 @@ public class RaceEngineerService {
             SpeedEvent.class
     );
 
+    private static final Set<Class<?>> DERIVED_FACT_TYPES = Set.of(
+            RaceState.class,
+            CarTelemetry.class,
+            FuelStatus.class,
+            EngineStatus.class,
+            BrakeStatus.class,
+            TyreStatus.class,
+            WeatherStatus.class,
+            TrackStatus.class,
+            CompetitorStatus.class,
+            DriverReport.class,
+            SuspensionStatus.class,
+            TrackSafetyParameters.class,
+            TrackStrategyParameters.class,
+            TrackProfile.class,
+            Recommendation.class
+    );
+
+    private static final Set<Class<?>> EVENT_FACT_TYPES = Set.of(
+            TelemetryEvent.class,
+            TyrePressureEvent.class,
+            TemperatureEvent.class,
+            LapTimeEvent.class,
+            GForceEvent.class,
+            SpeedEvent.class
+    );
+
     private final KieContainer kieContainer;
     private final TrackThresholdService trackThresholdService;
     private RaceSessionContext session;
@@ -112,6 +139,8 @@ public class RaceEngineerService {
         context.upsertFact(request.getSuspensionStatus());
 
         insertEvents(context, request);
+
+        context.clearDerivedFacts(DERIVED_FACT_TYPES);
 
         context.kieSession().fireAllRules();
 
