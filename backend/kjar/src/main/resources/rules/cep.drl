@@ -100,3 +100,91 @@ when
 then
     insert(new BrakeOverheating());
 end
+
+rule "Detect engine overheating from three-lap average"
+when
+    $params: TrackSafetyParameters($maxEngineTemperature: maxEngineTemperatureCelsius)
+    accumulate(
+        TemperatureEvent($temperature: engineTemperatureCelsius) over window:length(3);
+        $count: count($temperature),
+        $averageTemperature: average($temperature)
+    )
+    eval($count >= 3 && $averageTemperature.doubleValue() > $maxEngineTemperature)
+    not EngineOverheating()
+then
+    insert(new EngineOverheating());
+end
+
+rule "Detect tyre overheating from three-lap average"
+when
+    $params: TrackSafetyParameters($criticalTyreTemperature: criticalTyreTemperatureCelsius)
+    accumulate(
+        TemperatureEvent($temperature: tyreTemperatureCelsius) over window:length(3);
+        $count: count($temperature),
+        $averageTemperature: average($temperature)
+    )
+    eval($count >= 3 && $averageTemperature.doubleValue() > $criticalTyreTemperature)
+    not TyresOverheated()
+then
+    insert(new TyresOverheated());
+end
+
+rule "Detect sustained brake overheating"
+when
+    $params: TrackSafetyParameters($criticalBrakeTemperature: criticalBrakeTemperatureCelsius)
+    $start: TemperatureEvent($startTime: timestamp, brakeTemperatureCelsius > $criticalBrakeTemperature)
+    $end: TemperatureEvent($endTime: timestamp, brakeTemperatureCelsius > $criticalBrakeTemperature, this != $start)
+    eval(java.time.Duration.between($startTime, $endTime).toMillis() >= 5000)
+    not TemperatureEvent(
+        $middleTime: timestamp,
+        brakeTemperatureCelsius <= $criticalBrakeTemperature,
+        eval($middleTime != null && $startTime != null && $endTime != null
+                && $middleTime.isAfter($startTime) && $middleTime.isBefore($endTime))
+    )
+    not BrakeOverheating()
+then
+    insert(new BrakeOverheating());
+end
+
+rule "Detect sustained engine overheating from telemetry"
+when
+    $params: TrackSafetyParameters($maxEngineTemperature: maxEngineTemperatureCelsius)
+    $start: TemperatureEvent($startTime: timestamp, engineTemperatureCelsius > $maxEngineTemperature)
+    $end: TemperatureEvent($endTime: timestamp, engineTemperatureCelsius > $maxEngineTemperature, this != $start)
+    eval(java.time.Duration.between($startTime, $endTime).toMillis() >= 5000)
+    not TemperatureEvent(
+        $middleTime: timestamp,
+        engineTemperatureCelsius <= $maxEngineTemperature,
+        eval($middleTime != null && $startTime != null && $endTime != null
+                && $middleTime.isAfter($startTime) && $middleTime.isBefore($endTime))
+    )
+    not EngineOverheating()
+then
+    insert(new EngineOverheating());
+end
+
+rule "Detect sustained tyre overheating from telemetry"
+when
+    $params: TrackSafetyParameters($criticalTyreTemperature: criticalTyreTemperatureCelsius)
+    $start: TemperatureEvent($startTime: timestamp, tyreTemperatureCelsius > $criticalTyreTemperature)
+    $end: TemperatureEvent($endTime: timestamp, tyreTemperatureCelsius > $criticalTyreTemperature, this != $start)
+    eval(java.time.Duration.between($startTime, $endTime).toMillis() >= 5000)
+    not TemperatureEvent(
+        $middleTime: timestamp,
+        tyreTemperatureCelsius <= $criticalTyreTemperature,
+        eval($middleTime != null && $startTime != null && $endTime != null
+                && $middleTime.isAfter($startTime) && $middleTime.isBefore($endTime))
+    )
+    not TyresOverheated()
+then
+    insert(new TyresOverheated());
+end
+
+rule "Detect incident from g-force and speed drop"
+when
+    GForceEvent(lateralGForce > 5.0 || longitudinalGForce > 5.0) over window:time(2s)
+    SpeedEvent(speedKmh == 0.0) over window:time(2s)
+    not IncidentDetected()
+then
+    insert(new IncidentDetected());
+end
