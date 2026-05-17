@@ -12,7 +12,7 @@ when
     WeatherStatus(trackCondition == TrackCondition.PARTIALLY_WET, weatherTrend == WeatherTrend.RAIN_INTENSIFYING)
     not WetEarlyPitRecommended()
 then
-    insert(new WetEarlyPitRecommended());
+    insertLogical(new WetEarlyPitRecommended());
 end
 
 rule "Recommend delaying pit while track is drying"
@@ -20,7 +20,7 @@ when
     WeatherStatus(trackCondition == TrackCondition.WET, weatherTrend == WeatherTrend.DRYING)
     not DelayPitStopRecommended()
 then
-    insert(new DelayPitStopRecommended());
+    insertLogical(new DelayPitStopRecommended());
 end
 
 rule "Warn about rain risk on dry track"
@@ -28,5 +28,5 @@ when
     WeatherStatus(trackCondition == TrackCondition.DRY, rainProbabilityPercentage >= 60.0)
     not RainRiskWarning()
 then
-    insert(new RainRiskWarning());
+    insertLogical(new RainRiskWarning());
 end
