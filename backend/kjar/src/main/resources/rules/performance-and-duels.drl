@@ -3,7 +3,7 @@ package rules;
 import com.ftn.sbnz.f1.model.enums.DriverIssue;
 import com.ftn.sbnz.f1.model.enums.FlagStatus;
 import com.ftn.sbnz.f1.model.facts.BatteryHigh;
-import com.ftn.sbnz.f1.model.facts.CarTelemetry;
+import com.ftn.sbnz.f1.model.facts.BatteryStatus;
 import com.ftn.sbnz.f1.model.facts.CompetitorStatus;
 import com.ftn.sbnz.f1.model.facts.DriverReport;
 import com.ftn.sbnz.f1.model.facts.ErsOvertakeAvailable;
@@ -29,7 +29,7 @@ end
 
 rule "Detect high battery"
 when
-    CarTelemetry(ersBatteryPercentage > 50)
+    BatteryStatus(ersBatteryPercentage > 50)
     not BatteryHigh()
 then
     insert(new BatteryHigh());

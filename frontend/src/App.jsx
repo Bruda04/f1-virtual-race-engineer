@@ -115,12 +115,7 @@ function buildUpdatePayload(form) {
       totalLaps: numberValue(form.totalLaps),
       criticalPhase: form.criticalPhase,
     },
-    carTelemetry: {
-      speedKmh: numberValue(form.speedKmh),
-      lateralGForce: numberValue(form.lateralGForce),
-      longitudinalGForce: numberValue(form.longitudinalGForce),
-      fuelPressure: numberValue(form.fuelPressure),
-      oilPressure: numberValue(form.oilPressure),
+    batteryStatus: {
       ersBatteryPercentage: numberValue(form.ersBatteryPercentage),
     },
     fuelStatus: {

@@ -7,11 +7,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class CarTelemetry {
-    private double speedKmh;
-    private double lateralGForce;
-    private double longitudinalGForce;
-    private double fuelPressure;
-    private double oilPressure;
+public class BatteryStatus {
     private int ersBatteryPercentage;
 }
+

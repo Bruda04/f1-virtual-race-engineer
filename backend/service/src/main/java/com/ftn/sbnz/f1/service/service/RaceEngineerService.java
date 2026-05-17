@@ -9,7 +9,7 @@ import com.ftn.sbnz.f1.model.events.TelemetryEvent;
 import com.ftn.sbnz.f1.model.events.TemperatureEvent;
 import com.ftn.sbnz.f1.model.events.TyrePressureEvent;
 import com.ftn.sbnz.f1.model.facts.BrakeStatus;
-import com.ftn.sbnz.f1.model.facts.CarTelemetry;
+import com.ftn.sbnz.f1.model.facts.BatteryStatus;
 import com.ftn.sbnz.f1.model.facts.CompetitorStatus;
 import com.ftn.sbnz.f1.model.facts.DriverReport;
 import com.ftn.sbnz.f1.model.facts.EngineStatus;
@@ -49,7 +49,7 @@ public class RaceEngineerService {
 
     private static final Set<Class<?>> SESSION_STATE_FACT_TYPES = Set.of(
             RaceState.class,
-            CarTelemetry.class,
+            BatteryStatus.class,
             FuelStatus.class,
             EngineStatus.class,
             BrakeStatus.class,
@@ -125,7 +125,7 @@ public class RaceEngineerService {
     public synchronized RaceEngineerResponse updateRace(RaceSessionUpdateRequest request) {
         RaceSessionContext context = currentSession();
         context.upsertFact(request.getRaceState());
-        context.upsertFact(request.getCarTelemetry());
+        context.upsertFact(request.getBatteryStatus());
         context.upsertFact(request.getFuelStatus());
         context.upsertFact(request.getEngineStatus());
         context.upsertFact(request.getBrakeStatus());
