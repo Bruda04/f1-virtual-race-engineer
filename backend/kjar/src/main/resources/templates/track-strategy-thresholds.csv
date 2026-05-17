@@ -1,0 +1,5 @@
+trackName,maxLapsOnTyres,minLapsOnTyresForSafetyCarPit,averagePitLossSeconds,paceDropThresholdSeconds
+Default,24,12,22.0,0.70
+HighDegradationTrack,18,9,21.0,0.55
+LowDegradationTrack,32,16,23.0,0.85
+HighAltitudeTrack,24,12,22.0,0.70

@@ -1,0 +1,28 @@
+template header
+trackName
+maxLapsOnTyres
+minLapsOnTyresForSafetyCarPit
+averagePitLossSeconds
+paceDropThresholdSeconds
+
+package rules;
+
+import com.ftn.sbnz.f1.model.facts.TrackProfile;
+import com.ftn.sbnz.f1.model.facts.TrackStrategyParameters;
+
+template "Create strategy parameters for track"
+
+rule "Create @{trackName} strategy parameters"
+when
+    TrackProfile(name == "@{trackName}")
+    not TrackStrategyParameters()
+then
+    insert(new TrackStrategyParameters(
+        @{maxLapsOnTyres},
+        @{minLapsOnTyresForSafetyCarPit},
+        @{averagePitLossSeconds},
+        @{paceDropThresholdSeconds}
+    ));
+end
+
+end template

@@ -1,0 +1,192 @@
+package rules;
+
+import com.ftn.sbnz.f1.model.enums.EngineMode;
+import com.ftn.sbnz.f1.model.enums.ErsMode;
+import com.ftn.sbnz.f1.model.enums.RecommendationType;
+import com.ftn.sbnz.f1.model.enums.Urgency;
+import com.ftn.sbnz.f1.model.facts.AttackModeBlocked;
+import com.ftn.sbnz.f1.model.facts.BlueFlagInstructionRequired;
+import com.ftn.sbnz.f1.model.facts.BrakeOverheating;
+import com.ftn.sbnz.f1.model.facts.CheapPitStopOpportunity;
+import com.ftn.sbnz.f1.model.facts.DelayPitStopRecommended;
+import com.ftn.sbnz.f1.model.facts.EngineCoolingRequired;
+import com.ftn.sbnz.f1.model.facts.EngineCoolingWithCleanAirInstruction;
+import com.ftn.sbnz.f1.model.facts.EngineOverheating;
+import com.ftn.sbnz.f1.model.facts.ErsOvertakeAvailable;
+import com.ftn.sbnz.f1.model.facts.ExtremeFuelSavingStrategy;
+import com.ftn.sbnz.f1.model.facts.FuelCritical;
+import com.ftn.sbnz.f1.model.facts.FuelSavingDefensiveStrategy;
+import com.ftn.sbnz.f1.model.facts.FullResourceDefense;
+import com.ftn.sbnz.f1.model.facts.IncidentDetected;
+import com.ftn.sbnz.f1.model.facts.IncreasedFailureRisk;
+import com.ftn.sbnz.f1.model.facts.OvertakeOpportunity;
+import com.ftn.sbnz.f1.model.facts.PenaltyRisk;
+import com.ftn.sbnz.f1.model.facts.PitWindowAvailable;
+import com.ftn.sbnz.f1.model.facts.PossibleSuspensionDamage;
+import com.ftn.sbnz.f1.model.facts.PotentialPuncture;
+import com.ftn.sbnz.f1.model.facts.RainRiskWarning;
+import com.ftn.sbnz.f1.model.facts.Recommendation;
+import com.ftn.sbnz.f1.model.facts.RestartAttackMode;
+import com.ftn.sbnz.f1.model.facts.TyresCold;
+import com.ftn.sbnz.f1.model.facts.TyresOverheated;
+import com.ftn.sbnz.f1.model.facts.TyresWorn;
+import com.ftn.sbnz.f1.model.facts.WeakCarPerformance;
+import com.ftn.sbnz.f1.model.facts.WetEarlyPitRecommended;
+import com.ftn.sbnz.f1.model.facts.PaceDropDetected;
+
+rule "Recommend emergency pit for puncture"
+    salience 100
+when
+    PotentialPuncture()
+    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.CRITICAL)
+then
+    insert(new Recommendation(
+        RecommendationType.PIT_STOP,
+        Urgency.CRITICAL,
+        "Potential puncture detected; box immediately.",
+        EngineMode.NORMAL,
+        ErsMode.SAVE
+    ));
+end
+
+rule "Recommend cheap safety car pit stop"
+    salience 80
+when
+    CheapPitStopOpportunity()
+    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.CRITICAL)
+    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
+then
+    insert(new Recommendation(
+        RecommendationType.PIT_STOP,
+        Urgency.HIGH,
+        "Pit under Safety Car or VSC while time loss is reduced.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Recommend pit stop from pit window"
+    salience 60
+when
+    PitWindowAvailable()
+    PaceDropDetected()
+    (TyresWorn() or TyresOverheated())
+    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.CRITICAL)
+    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
+then
+    insert(new Recommendation(
+        RecommendationType.PIT_STOP,
+        Urgency.HIGH,
+        "Pit window is available; recommend boxing.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Recommend pit for weak performance"
+    salience 40
+when
+    WeakCarPerformance()
+    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.CRITICAL)
+    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
+then
+    insert(new Recommendation(
+        RecommendationType.PIT_STOP,
+        Urgency.HIGH,
+        "Tyre wear and pace drop detected; pit stop recommended.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Recommend early wet pit"
+    salience 20
+when
+    WetEarlyPitRecommended()
+    not Recommendation(type == RecommendationType.PIT_STOP)
+then
+    insert(new Recommendation(
+        RecommendationType.PIT_STOP,
+        Urgency.MEDIUM,
+        "Rain is intensifying on a partially wet track; consider early pit.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Warn about incident"
+    salience 100
+when
+    IncidentDetected()
+    not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Incident detected from g-force spike and speed drop.")
+then
+    insert(new Recommendation(
+        RecommendationType.SAFETY_ALERT,
+        Urgency.CRITICAL,
+        "Incident detected from g-force spike and speed drop.",
+        EngineMode.NORMAL,
+        ErsMode.SAVE
+    ));
+end
+
+rule "Warn yellow flag penalty risk"
+    salience 90
+when
+    PenaltyRisk()
+    not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Yellow flag active; slow down immediately to avoid penalty.")
+then
+    insert(new Recommendation(
+        RecommendationType.SAFETY_ALERT,
+        Urgency.CRITICAL,
+        "Yellow flag active; slow down immediately to avoid penalty.",
+        EngineMode.NORMAL,
+        ErsMode.SAVE
+    ));
+end
+
+rule "Warn about suspension damage"
+    salience 80
+when
+    PossibleSuspensionDamage()
+    not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Possible suspension damage; avoid kerbs and report handling.")
+then
+    insert(new Recommendation(
+        RecommendationType.SAFETY_ALERT,
+        Urgency.CRITICAL,
+        "Possible suspension damage; avoid kerbs and report handling.",
+        EngineMode.NORMAL,
+        ErsMode.SAVE
+    ));
+end
+
+rule "Warn about increased failure risk"
+    salience 70
+when
+    IncreasedFailureRisk()
+    not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Keep current performance, but failure risk is increased.")
+then
+    insert(new Recommendation(
+        RecommendationType.SAFETY_ALERT,
+        Urgency.CRITICAL,
+        "Keep current performance, but failure risk is increased.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Warn about brake overheating"
+    salience 60
+when
+    BrakeOverheating()
+    not Recommendation(type == RecommendationType.SAFETY_ALERT, urgency == Urgency.CRITICAL)
+    not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Brake overheating detected; manage brake temperatures.")
+then
+    insert(new Recommendation(
+        RecommendationType.SAFETY_ALERT,
+        Urgency.HIGH,
+        "Brake overheating detected; manage brake temperatures.",
+        EngineMode.NORMAL,
+        ErsMode.SAVE
+    ));
+end
+
