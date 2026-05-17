@@ -369,3 +369,73 @@ then
         ErsMode.NORMAL
     ));
 end
+
+rule "Warn engineer about critical fuel"
+when
+    FuelCritical()
+    not Recommendation(type == RecommendationType.WARNING, message == "Fuel consumption is above plan; monitor fuel target.")
+then
+    insert(new Recommendation(
+        RecommendationType.WARNING,
+        Urgency.HIGH,
+        "Fuel consumption is above plan; monitor fuel target.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Warn engineer about engine overheating"
+when
+    EngineOverheating()
+    not Recommendation(type == RecommendationType.WARNING, message == "Engine temperature is above the safe limit.")
+then
+    insert(new Recommendation(
+        RecommendationType.WARNING,
+        Urgency.HIGH,
+        "Engine temperature is above the safe limit.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Warn about worn tyres"
+when
+    TyresWorn()
+    not Recommendation(type == RecommendationType.WARNING, message == "Current tyre set is beyond the configured maximum lap count.")
+then
+    insert(new Recommendation(
+        RecommendationType.WARNING,
+        Urgency.HIGH,
+        "Current tyre set is beyond the configured maximum lap count.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Warn about overheated tyres"
+when
+    TyresOverheated()
+    not Recommendation(type == RecommendationType.WARNING, message == "Tyres are above the critical temperature threshold.")
+then
+    insert(new Recommendation(
+        RecommendationType.WARNING,
+        Urgency.HIGH,
+        "Tyres are above the critical temperature threshold.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Warn about rain risk"
+when
+    RainRiskWarning()
+    not Recommendation(type == RecommendationType.WARNING, message == "Dry track with high rain probability; prepare reactive strategy.")
+then
+    insert(new Recommendation(
+        RecommendationType.WARNING,
+        Urgency.MEDIUM,
+        "Dry track with high rain probability; prepare reactive strategy.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
