@@ -26,7 +26,7 @@ when
     FuelStatus(consumptionDeltaKgPerLap > $criticalFuelDelta)
     not FuelCritical()
 then
-    insert(new FuelCritical());
+    insertLogical(new FuelCritical());
 end
 
 rule "Detect high fuel risk before final phase"
@@ -35,7 +35,7 @@ when
     RaceState(remainingLaps > 10)
     not FuelRiskHigh()
 then
-    insert(new FuelRiskHigh());
+    insertLogical(new FuelRiskHigh());
 end
 
 rule "Prioritize defending position while fuel is critical"
@@ -44,7 +44,7 @@ when
     CompetitorStatus(gapBehindSeconds < 1.5)
     not DefensivePriority()
 then
-    insert(new DefensivePriority());
+    insertLogical(new DefensivePriority());
 end
 
 rule "Activate fuel saving defensive strategy"
@@ -53,7 +53,7 @@ when
     DefensivePriority()
     not FuelSavingDefensiveStrategy()
 then
-    insert(new FuelSavingDefensiveStrategy());
+    insertLogical(new FuelSavingDefensiveStrategy());
 end
 
 rule "Use neutralized track for extreme fuel saving"
@@ -62,7 +62,7 @@ when
     FuelRiskHigh()
     not ExtremeFuelSavingStrategy()
 then
-    insert(new ExtremeFuelSavingStrategy());
+    insertLogical(new ExtremeFuelSavingStrategy());
 end
 
 rule "Detect engine overheating"
@@ -71,7 +71,7 @@ when
     EngineStatus(temperatureCelsius > $maxEngineTemperature)
     not EngineOverheating()
 then
-    insert(new EngineOverheating());
+    insertLogical(new EngineOverheating());
 end
 
 rule "Require engine cooling outside critical phase"
@@ -80,7 +80,7 @@ when
     RaceState(criticalPhase == false)
     not EngineCoolingRequired()
 then
-    insert(new EngineCoolingRequired());
+    insertLogical(new EngineCoolingRequired());
 end
 
 rule "Require clean air for cooling when in dirty air"
@@ -90,7 +90,7 @@ when
     EngineStatus(inDirtyAir == true)
     not EngineCoolingWithCleanAirInstruction()
 then
-    insert(new EngineCoolingWithCleanAirInstruction());
+    insertLogical(new EngineCoolingWithCleanAirInstruction());
 end
 
 rule "Keep performance but mark failure risk in critical phase"
@@ -99,7 +99,7 @@ when
     RaceState(criticalPhase == true)
     not IncreasedFailureRisk()
 then
-    insert(new IncreasedFailureRisk());
+    insertLogical(new IncreasedFailureRisk());
 end
 
 rule "Block attack mode while overheated in dirty air"
@@ -108,7 +108,7 @@ when
     EngineStatus(inDirtyAir == true, attemptingOvertake == true)
     not AttackModeBlocked()
 then
-    insert(new AttackModeBlocked());
+    insertLogical(new AttackModeBlocked());
 end
 
 rule "Detect brake overheating"
@@ -117,5 +117,5 @@ when
     BrakeStatus(averageTemperatureCelsius > $criticalBrakeTemperature)
     not BrakeOverheating()
 then
-    insert(new BrakeOverheating());
+    insertLogical(new BrakeOverheating());
 end

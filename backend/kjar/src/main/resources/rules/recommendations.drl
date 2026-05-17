@@ -196,7 +196,7 @@ when
     AttackModeBlocked()
     not Recommendation(type == RecommendationType.ENGINE_MODE)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.ENGINE_MODE,
         Urgency.HIGH,
         "Do not use attack mode until engine temperature stabilizes.",
@@ -211,7 +211,7 @@ when
     EngineCoolingRequired()
     not Recommendation(type == RecommendationType.ENGINE_MODE)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.ENGINE_MODE,
         Urgency.MEDIUM,
         "Switch to engine cooling mode.",
@@ -226,7 +226,7 @@ when
     RestartAttackMode()
     not Recommendation(type == RecommendationType.ENGINE_MODE)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.ENGINE_MODE,
         Urgency.HIGH,
         "Green flag after neutralization; prepare for restart attack.",
@@ -241,7 +241,7 @@ when
     ErsOvertakeAvailable()
     not Recommendation(type == RecommendationType.ERS_MODE)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.ERS_MODE,
         Urgency.HIGH,
         "Battery level is high; full ERS power available for overtake.",
@@ -256,7 +256,7 @@ when
     BlueFlagInstructionRequired()
     not Recommendation(type == RecommendationType.DRIVER_INSTRUCTION)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.DRIVER_INSTRUCTION,
         Urgency.HIGH,
         "Blue flag active; yield to the lapping car.",
@@ -271,7 +271,7 @@ when
     EngineCoolingWithCleanAirInstruction()
     not Recommendation(type == RecommendationType.DRIVER_INSTRUCTION)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.DRIVER_INSTRUCTION,
         Urgency.HIGH,
         "Move out of dirty air to improve engine cooling.",
@@ -286,7 +286,7 @@ when
     TyresCold()
     not Recommendation(type == RecommendationType.DRIVER_INSTRUCTION)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.DRIVER_INSTRUCTION,
         Urgency.MEDIUM,
         "Increase tyre warmup maneuvers.",
@@ -301,7 +301,7 @@ when
     FullResourceDefense()
     not Recommendation(type == RecommendationType.STRATEGY)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.STRATEGY,
         Urgency.CRITICAL,
         "Final lap defense; deploy all available resources.",
@@ -316,7 +316,7 @@ when
     ExtremeFuelSavingStrategy()
     not Recommendation(type == RecommendationType.STRATEGY)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.STRATEGY,
         Urgency.HIGH,
         "Activate extreme fuel-saving mode and follow the prescribed pace.",
@@ -331,7 +331,7 @@ when
     FuelSavingDefensiveStrategy()
     not Recommendation(type == RecommendationType.STRATEGY)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.STRATEGY,
         Urgency.HIGH,
         "Defend position while saving fuel; use ERS only on straights.",
@@ -346,7 +346,7 @@ when
     DelayPitStopRecommended()
     not Recommendation(type == RecommendationType.STRATEGY)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.STRATEGY,
         Urgency.MEDIUM,
         "Track is wet but drying; delay pit if tyre condition allows.",
@@ -361,7 +361,7 @@ when
     OvertakeOpportunity()
     not Recommendation(type == RecommendationType.STRATEGY)
 then
-    insert(new Recommendation(
+    insertLogical(new Recommendation(
         RecommendationType.STRATEGY,
         Urgency.MEDIUM,
         "Gap ahead is under one second; DRS and overtake mode are available.",
