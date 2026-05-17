@@ -5,7 +5,6 @@ import com.ftn.sbnz.f1.model.enums.Urgency;
 import com.ftn.sbnz.f1.model.events.GForceEvent;
 import com.ftn.sbnz.f1.model.events.LapTimeEvent;
 import com.ftn.sbnz.f1.model.events.SpeedEvent;
-import com.ftn.sbnz.f1.model.events.TelemetryEvent;
 import com.ftn.sbnz.f1.model.events.TemperatureEvent;
 import com.ftn.sbnz.f1.model.events.TyrePressureEvent;
 import com.ftn.sbnz.f1.model.facts.BrakeStatus;
@@ -30,11 +29,14 @@ import com.ftn.sbnz.f1.service.dto.RaceSessionUpdateRequest;
 
 import java.util.*;
 import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import com.ftn.sbnz.f1.service.model.EventEnvelope;
 import com.ftn.sbnz.f1.service.model.RaceSessionContext;
+import org.kie.api.event.rule.AgendaEventListener;
+import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -62,7 +64,6 @@ public class RaceEngineerService {
     );
 
     private static final Set<Class<?>> EVENT_FACT_TYPES = Set.of(
-            TelemetryEvent.class,
             TyrePressureEvent.class,
             TemperatureEvent.class,
             LapTimeEvent.class,
@@ -110,7 +111,9 @@ public class RaceEngineerService {
 
         SessionPseudoClock clock = kieSession.getSessionClock();
 
+        kieSession.addEventListener(new DebugRuleRuntimeEventListener());
         Instant startTime = request.getStartTime() != null ? request.getStartTime() : Instant.EPOCH;
+        clock.advanceTime(startTime.toEpochMilli(), TimeUnit.MILLISECONDS);
         RaceSessionContext context = new RaceSessionContext(kieSession, clock, startTime);
 
 
@@ -160,7 +163,6 @@ public class RaceEngineerService {
 
     private void insertEvents(RaceSessionContext context, RaceSessionUpdateRequest request) {
         List<EventEnvelope> events = new ArrayList<>();
-        appendEvents(events, request.getTelemetryEvents());
         appendEvents(events, request.getTyrePressureEvents());
         appendEvents(events, request.getTemperatureEvents());
         appendEvents(events, request.getLapTimeEvents());
@@ -194,10 +196,6 @@ public class RaceEngineerService {
     }
 
     private EventEnvelope envelopeFor(Object event) {
-        if (event instanceof TelemetryEvent) {
-            TelemetryEvent telemetryEvent = (TelemetryEvent) event;
-            return new EventEnvelope(telemetryEvent.getTimestamp(), telemetryEvent);
-        }
         if (event instanceof TyrePressureEvent) {
             TyrePressureEvent tyrePressureEvent = (TyrePressureEvent) event;
             return new EventEnvelope(tyrePressureEvent.getTimestamp(), tyrePressureEvent);
