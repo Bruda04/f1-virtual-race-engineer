@@ -22,10 +22,7 @@ import com.ftn.sbnz.f1.model.facts.TrackStatus;
 import com.ftn.sbnz.f1.model.facts.TrackStrategyParameters;
 import com.ftn.sbnz.f1.model.facts.TyreStatus;
 import com.ftn.sbnz.f1.model.facts.WeatherStatus;
-import com.ftn.sbnz.f1.service.dto.RaceEngineerResponse;
-import com.ftn.sbnz.f1.service.dto.RaceSessionStartRequest;
-import com.ftn.sbnz.f1.service.dto.RaceSessionStatusResponse;
-import com.ftn.sbnz.f1.service.dto.RaceSessionUpdateRequest;
+import com.ftn.sbnz.f1.service.dto.*;
 
 import java.util.*;
 import java.time.Instant;
@@ -33,10 +30,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.ftn.sbnz.f1.service.model.EventEnvelope;
 import com.ftn.sbnz.f1.service.model.RaceSessionContext;
-import org.kie.api.event.rule.AgendaEventListener;
-import org.kie.api.event.rule.DebugRuleRuntimeEventListener;
 import org.kie.api.runtime.ClassObjectFilter;
 import org.kie.api.runtime.KieContainer;
 import org.kie.api.runtime.KieSession;
@@ -111,13 +105,12 @@ public class RaceEngineerService {
 
         SessionPseudoClock clock = kieSession.getSessionClock();
 
-        kieSession.addEventListener(new DebugRuleRuntimeEventListener());
         Instant startTime = request.getStartTime() != null ? request.getStartTime() : Instant.EPOCH;
         clock.advanceTime(startTime.toEpochMilli(), TimeUnit.MILLISECONDS);
         RaceSessionContext context = new RaceSessionContext(kieSession, clock, startTime);
 
-
-        insertTemplateParameters(context, request.getTrackProfile());
+        TrackThresholdService.TrackTemplateParameters parameters = trackThresholdService.parametersFor(request.getTrackProfile());
+        context.insertTemplateParameters(parameters);
 
         context.kieSession().fireAllRules();
 
@@ -127,19 +120,9 @@ public class RaceEngineerService {
 
     public synchronized RaceEngineerResponse updateRace(RaceSessionUpdateRequest request) {
         RaceSessionContext context = currentSession();
-        context.upsertFact(request.getRaceState());
-        context.upsertFact(request.getBatteryStatus());
-        context.upsertFact(request.getFuelStatus());
-        context.upsertFact(request.getEngineStatus());
-        context.upsertFact(request.getBrakeStatus());
-        context.upsertFact(request.getTyreStatus());
-        context.upsertFact(request.getWeatherStatus());
-        context.upsertFact(request.getTrackStatus());
-        context.upsertFact(request.getCompetitorStatus());
-        context.upsertFact(request.getDriverReport());
-        context.upsertFact(request.getSuspensionStatus());
+        context.upsertFacts(request);
 
-        insertEvents(context, request);
+        context.insertTelemetryEvents(request);
 
         context.clearGeneratedFactsForReevaluation(FACT_TYPES_TO_KEEP_ON_UPDATE);
 
@@ -159,64 +142,6 @@ public class RaceEngineerService {
             session.kieSession().dispose();
             session = null;
         }
-    }
-
-    private void insertEvents(RaceSessionContext context, RaceSessionUpdateRequest request) {
-        List<EventEnvelope> events = new ArrayList<>();
-        appendEvents(events, request.getTyrePressureEvents());
-        appendEvents(events, request.getTemperatureEvents());
-        appendEvents(events, request.getLapTimeEvents());
-        appendEvents(events, request.getGForceEvents());
-        appendEvents(events, request.getSpeedEvents());
-
-        events.stream()
-                .sorted(Comparator.comparing(EventEnvelope::getTimestamp))
-                .forEach(event -> {
-                    context.advanceTo(event.getTimestamp());
-                    context.kieSession().insert(event.getPayload());
-                });
-    }
-
-    private void insertTemplateParameters(RaceSessionContext context, String trackProfile) {
-        TrackThresholdService.TrackTemplateParameters parameters = trackThresholdService.parametersFor(trackProfile);
-        context.upsertFact(new TrackProfile(parameters.getTrackProfile()));
-
-        context.upsertFact(parameters.getSafetyParameters());
-        context.upsertFact(parameters.getStrategyParameters());
-    }
-
-    private void appendEvents(List<EventEnvelope> envelopes, List<?> events) {
-        if (events == null) {
-            return;
-        }
-        events.stream()
-                .filter(Objects::nonNull)
-                .map(this::envelopeFor)
-                .forEach(envelopes::add);
-    }
-
-    private EventEnvelope envelopeFor(Object event) {
-        if (event instanceof TyrePressureEvent) {
-            TyrePressureEvent tyrePressureEvent = (TyrePressureEvent) event;
-            return new EventEnvelope(tyrePressureEvent.getTimestamp(), tyrePressureEvent);
-        }
-        if (event instanceof TemperatureEvent) {
-            TemperatureEvent temperatureEvent = (TemperatureEvent) event;
-            return new EventEnvelope(temperatureEvent.getTimestamp(), temperatureEvent);
-        }
-        if (event instanceof LapTimeEvent) {
-            LapTimeEvent lapTimeEvent = (LapTimeEvent) event;
-            return new EventEnvelope(lapTimeEvent.getTimestamp(), lapTimeEvent);
-        }
-        if (event instanceof GForceEvent) {
-            GForceEvent gForceEvent = (GForceEvent) event;
-            return new EventEnvelope(gForceEvent.getTimestamp(), gForceEvent);
-        }
-        if (event instanceof SpeedEvent) {
-            SpeedEvent speedEvent = (SpeedEvent) event;
-            return new EventEnvelope(speedEvent.getTimestamp(), speedEvent);
-        }
-        throw new IllegalArgumentException("Unsupported event type: " + event.getClass().getName());
     }
 
     private RaceEngineerResponse responseFrom(KieSession kieSession) {
@@ -249,6 +174,7 @@ public class RaceEngineerService {
                 .sorted(Comparator.comparingInt((Recommendation r) -> r.getUrgency().ordinal()).reversed())
                 .collect(Collectors.toList());
     }
+
     private List<String> derivedFactsFrom(KieSession kieSession) {
         return kieSession.getObjects().stream()
                 .filter(fact -> fact.getClass().getPackageName().startsWith("com.ftn.sbnz.f1.model.facts"))
@@ -258,6 +184,4 @@ public class RaceEngineerService {
                 .sorted()
                 .collect(Collectors.toList());
     }
-
-
 }

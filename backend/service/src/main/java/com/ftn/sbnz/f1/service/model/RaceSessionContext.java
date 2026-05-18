@@ -1,5 +1,10 @@
 package com.ftn.sbnz.f1.service.model;
 
+import com.ftn.sbnz.f1.model.events.*;
+import com.ftn.sbnz.f1.model.facts.TrackProfile;
+import com.ftn.sbnz.f1.service.dto.RaceSessionUpdateRequest;
+import com.ftn.sbnz.f1.service.dto.TelemetrySnapshot;
+import com.ftn.sbnz.f1.service.service.TrackThresholdService;
 import org.kie.api.runtime.KieSession;
 import org.kie.api.runtime.rule.FactHandle;
 import org.kie.api.time.SessionPseudoClock;
@@ -33,7 +38,7 @@ public class RaceSessionContext {
         return currentTime;
     }
 
-    public void upsertFact(Object fact) {
+    private void upsertFact(Object fact) {
         if (fact == null) {
             return;
         }
@@ -45,7 +50,7 @@ public class RaceSessionContext {
         kieSession.update(factHandle, fact);
     }
 
-    public void advanceTo(Instant targetTime) {
+    private void advanceTo(Instant targetTime) {
         if (targetTime == null || !targetTime.isAfter(currentTime)) {
             return;
         }
@@ -62,5 +67,86 @@ public class RaceSessionContext {
                 .filter(Objects::nonNull)
                 .collect(Collectors.toList())
                 .forEach(kieSession::delete);
+    }
+
+    public void insertTelemetryEvents(RaceSessionUpdateRequest request) {
+        if (request.getTelemetry() == null || request.getTimestamp() == null) {
+            return;
+        }
+
+        Instant ts = request.getTimestamp();
+        TelemetrySnapshot t = request.getTelemetry();
+
+        this.advanceTo(ts);
+
+        if (t.getTyrePressureBar() != null) {
+            this.kieSession().insert(
+                    new TyrePressureEvent(ts, t.getTyrePressureBar())
+            );
+        }
+
+        if (
+                t.getBrakeTemperatureCelsius() != null
+                        || t.getEngineTemperatureCelsius() != null
+                        || t.getTyreTemperatureCelsius() != null
+        ) {
+            this.kieSession().insert(
+                    new TemperatureEvent(
+                            ts,
+                            t.getBrakeTemperatureCelsius(),
+                            t.getEngineTemperatureCelsius(),
+                            t.getTyreTemperatureCelsius()
+                    )
+            );
+        }
+
+        if (
+                t.getLateralGForce() != null
+                        || t.getLongitudinalGForce() != null
+        ) {
+            this.kieSession().insert(
+                    new GForceEvent(
+                            ts,
+                            t.getLateralGForce(),
+                            t.getLongitudinalGForce()
+                    )
+            );
+        }
+
+        if (t.getSpeedKmh() != null) {
+            this.kieSession().insert(
+                    new SpeedEvent(ts, t.getSpeedKmh())
+            );
+        }
+
+        if (t.getLapTimeSeconds() != null) {
+            this.kieSession().insert(
+                    new LapTimeEvent(
+                            ts,
+                            request.getRaceState().getCurrentLap(),
+                            t.getLapTimeSeconds()
+                    )
+            );
+        }
+    }
+
+    public void upsertFacts(RaceSessionUpdateRequest request) {
+        this.upsertFact(request.getRaceState());
+        this.upsertFact(request.getBatteryStatus());
+        this.upsertFact(request.getFuelStatus());
+        this.upsertFact(request.getEngineStatus());
+        this.upsertFact(request.getBrakeStatus());
+        this.upsertFact(request.getTyreStatus());
+        this.upsertFact(request.getWeatherStatus());
+        this.upsertFact(request.getTrackStatus());
+        this.upsertFact(request.getCompetitorStatus());
+        this.upsertFact(request.getDriverReport());
+        this.upsertFact(request.getSuspensionStatus());
+    }
+
+    public void insertTemplateParameters(TrackThresholdService.TrackTemplateParameters parameters) {
+        this.upsertFact(new TrackProfile(parameters.getTrackProfile()));
+        this.upsertFact(parameters.getSafetyParameters());
+        this.upsertFact(parameters.getStrategyParameters());
     }
 }

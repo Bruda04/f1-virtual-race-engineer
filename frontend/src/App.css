@@ -191,7 +191,9 @@ h2 {
 }
 
 .split {
-  grid-template-columns: 1fr 1fr;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
 }
 
 .form-grid {
@@ -234,6 +236,11 @@ h2 {
 .field textarea:focus {
   border-color: #d5202f;
   box-shadow: 0 0 0 3px rgba(213, 32, 47, 0.16);
+}
+
+.field input[type="datetime-local"] {
+  min-width: 0;
+  font-size: 13px;
 }
 
 .toggle-row {
@@ -523,5 +530,58 @@ h2 {
 
   .metric:last-child {
     border-bottom: none;
+  }
+}
+
+.sim-progress-bar {
+  background: #1a2027;
+  border-radius: 999px;
+  height: 4px;
+  overflow: hidden;
+}
+
+.sim-progress-fill {
+  background: #d5202f;
+  height: 100%;
+  transition: width 300ms ease;
+}
+
+.sim-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.sim-controls .ghost-button,
+.sim-controls .primary-button {
+  min-height: 36px;
+  padding: 0 12px;
+}
+
+.sim-controls .primary-button {
+  flex: 1;
+}
+
+.sim-step-count {
+  color: #9ca9b8;
+  font-size: 12px;
+  min-width: 50px;
+  text-align: center;
+}
+
+.sim-label {
+  background: #17212b;
+  border: 1px solid #314050;
+  border-radius: 6px;
+  color: #c7d1dc;
+  font-size: 12px;
+  margin-top: 8px;
+  padding: 8px 10px;
+}
+
+@media (max-width: 900px) {
+  .split {
+    grid-template-columns: 1fr;
   }
 }
