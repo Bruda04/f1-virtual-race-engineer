@@ -1,0 +1,75 @@
+[
+  {
+    "_label": "Lap 20 - clean engine baseline",
+    "_form": {
+      "sessionStartTime": "2026-01-01T14:00:00.000Z",
+      "eventTimestamp": "2026-01-01T14:00:01.000Z",
+      "trackProfile": "Default",
+      "currentLap": 20,
+      "totalLaps": 58,
+      "criticalPhase": false,
+      "speedKmh": 280,
+      "lateralGForce": 2,
+      "longitudinalGForce": 1,
+      "ersBatteryPercentage": 40,
+      "consumptionDeltaKgPerLap": 0.05,
+      "engineTemperatureCelsius": 100,
+      "inDirtyAir": false,
+      "attemptingOvertake": false,
+      "brakeTemperatureCelsius": 700,
+      "tyreCompound": "MEDIUM",
+      "lapsOnSet": 8,
+      "tyreTemperatureCelsius": 85,
+      "tyrePressureBar": 21.4,
+      "asphaltTemperatureCelsius": 34,
+      "rainProbabilityPercentage": 0,
+      "trackCondition": "DRY",
+      "weatherTrend": "STABLE",
+      "flagStatus": "GREEN",
+      "safetyCarActive": false,
+      "virtualSafetyCarActive": false,
+      "safetyCarRecentlyEnded": false,
+      "driverSlowedForYellowFlag": false,
+      "gapAheadSeconds": 2,
+      "gapBehindSeconds": 3,
+      "wouldExitAheadAfterPit": false,
+      "driverIssue": "NONE",
+      "driverNote": "Engine temperature is stable.",
+      "asymmetricCorneringGForces": false
+    }
+  },
+  {
+    "_label": "Lap 20 - first hot engine sample",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:02.000Z",
+      "engineTemperatureCelsius": 116,
+      "driverNote": "Engine temperature is above the safe limit."
+    }
+  },
+  {
+    "_label": "Lap 20 - hot engine sustained for five seconds",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:07.000Z",
+      "engineTemperatureCelsius": 118,
+      "driverNote": "Engine overheating has been sustained across the CEP window."
+    }
+  },
+  {
+    "_label": "Lap 20 - three hot engine samples",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:10.000Z",
+      "engineTemperatureCelsius": 119,
+      "driverNote": "Three-sample engine average is above the critical threshold."
+    }
+  },
+  {
+    "_label": "Lap 20 - engine temperature recovered after CEP window",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:22.000Z",
+      "engineTemperatureCelsius": 100,
+      "inDirtyAir": false,
+      "attemptingOvertake": false,
+      "driverNote": "Engine temperature is safe again after hot events expired."
+    }
+  }
+]

@@ -1,0 +1,140 @@
+[
+  {
+    "_label": "RUN 1 - HighDegradationTrack clean baseline",
+    "_form": {
+      "sessionStartTime": "2026-01-01T14:00:00.000Z",
+      "eventTimestamp": "2026-01-01T14:00:01.000Z",
+      "trackProfile": "HighDegradationTrack",
+      "currentLap": 20,
+      "totalLaps": 58,
+      "criticalPhase": false,
+      "speedKmh": 280,
+      "lateralGForce": 2,
+      "longitudinalGForce": 1,
+      "ersBatteryPercentage": 40,
+      "consumptionDeltaKgPerLap": 0.05,
+      "engineTemperatureCelsius": 100,
+      "inDirtyAir": false,
+      "attemptingOvertake": false,
+      "brakeTemperatureCelsius": 700,
+      "tyreCompound": "MEDIUM",
+      "lapsOnSet": 8,
+      "tyreTemperatureCelsius": 85,
+      "tyrePressureBar": 21.4,
+      "asphaltTemperatureCelsius": 34,
+      "rainProbabilityPercentage": 0,
+      "trackCondition": "DRY",
+      "weatherTrend": "STABLE",
+      "flagStatus": "GREEN",
+      "safetyCarActive": false,
+      "virtualSafetyCarActive": false,
+      "safetyCarRecentlyEnded": false,
+      "driverSlowedForYellowFlag": false,
+      "gapAheadSeconds": 2,
+      "gapBehindSeconds": 3,
+      "wouldExitAheadAfterPit": false,
+      "driverIssue": "NONE",
+      "driverNote": "HighDegradationTrack tyre limit is 18 laps; 8 laps is safe.",
+      "asymmetricCorneringGForces": false
+    }
+  },
+  {
+    "_label": "RUN 1 - HighDegradationTrack triggers at 19 laps",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:01:30.000Z",
+      "currentLap": 21,
+      "lapsOnSet": 19,
+      "driverNote": "19 laps is above the HighDegradationTrack tyre limit of 18."
+    }
+  },
+  {
+    "_label": "RUN 1 - HighDegradationTrack fresh tyre recovery",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:03:00.000Z",
+      "currentLap": 22,
+      "lapsOnSet": 1,
+      "driverNote": "Fresh tyre set clears the worn-tyre warning. Clear and Start before RUN 2."
+    }
+  },
+  {
+    "_label": "RUN 2 - Default clean baseline after Start",
+    "_form": {
+      "sessionStartTime": "2026-01-01T14:10:00.000Z",
+      "eventTimestamp": "2026-01-01T14:10:01.000Z",
+      "trackProfile": "Default",
+      "currentLap": 20,
+      "lapsOnSet": 8,
+      "engineTemperatureCelsius": 100,
+      "brakeTemperatureCelsius": 700,
+      "tyreTemperatureCelsius": 85,
+      "tyrePressureBar": 21.4,
+      "speedKmh": 280,
+      "lateralGForce": 2,
+      "longitudinalGForce": 1,
+      "driverNote": "Default tyre limit is 24 laps; 8 laps is safe."
+    }
+  },
+  {
+    "_label": "RUN 2 - Default does not trigger at 19 laps",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:11:30.000Z",
+      "currentLap": 21,
+      "lapsOnSet": 19,
+      "driverNote": "19 laps is below the Default tyre limit of 24, so worn tyres should not appear."
+    }
+  },
+  {
+    "_label": "RUN 2 - Default triggers at 25 laps",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:13:00.000Z",
+      "currentLap": 22,
+      "lapsOnSet": 25,
+      "driverNote": "25 laps is above the Default tyre limit of 24."
+    }
+  },
+  {
+    "_label": "RUN 2 - Default fresh tyre recovery",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:14:30.000Z",
+      "currentLap": 23,
+      "lapsOnSet": 1,
+      "driverNote": "Fresh tyre set clears the worn-tyre warning. Clear and Start before RUN 3."
+    }
+  },
+  {
+    "_label": "RUN 3 - LowDegradationTrack clean baseline after Start",
+    "_form": {
+      "sessionStartTime": "2026-01-01T14:20:00.000Z",
+      "eventTimestamp": "2026-01-01T14:20:01.000Z",
+      "trackProfile": "LowDegradationTrack",
+      "currentLap": 20,
+      "lapsOnSet": 8,
+      "engineTemperatureCelsius": 100,
+      "brakeTemperatureCelsius": 700,
+      "tyreTemperatureCelsius": 85,
+      "tyrePressureBar": 21.4,
+      "speedKmh": 280,
+      "lateralGForce": 2,
+      "longitudinalGForce": 1,
+      "driverNote": "LowDegradationTrack tyre limit is 32 laps; 8 laps is safe."
+    }
+  },
+  {
+    "_label": "RUN 3 - LowDegradationTrack does not trigger at 25 laps",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:21:30.000Z",
+      "currentLap": 21,
+      "lapsOnSet": 25,
+      "driverNote": "25 laps is below the LowDegradationTrack tyre limit of 32."
+    }
+  },
+  {
+    "_label": "RUN 3 - LowDegradationTrack triggers at 33 laps",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:23:00.000Z",
+      "currentLap": 22,
+      "lapsOnSet": 33,
+      "driverNote": "33 laps is above the LowDegradationTrack tyre limit of 32."
+    }
+  }
+]
