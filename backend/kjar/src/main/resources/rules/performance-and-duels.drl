@@ -64,7 +64,7 @@ end
 rule "Use all resources on final lap defense"
 when
     RaceState(remainingLaps == 0)
-    CompetitorStatus(getGapBehindSeconds < 1.0)
+    CompetitorStatus(gapBehindSeconds < 1.0)
     not FullResourceDefense()
 then
     insert(new FullResourceDefense());
