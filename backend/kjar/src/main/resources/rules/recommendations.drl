@@ -38,7 +38,6 @@ rule "Recommend emergency pit for puncture"
     salience 100
 when
     PotentialPuncture()
-    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.CRITICAL)
 then
     insert(new Recommendation(
         RecommendationType.PIT_STOP,
@@ -53,8 +52,7 @@ rule "Recommend cheap safety car pit stop"
     salience 80
 when
     CheapPitStopOpportunity()
-    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.CRITICAL)
-    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
+not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
 then
     insert(new Recommendation(
         RecommendationType.PIT_STOP,
@@ -71,8 +69,7 @@ when
     PitWindowAvailable()
     PaceDropDetected()
     (TyresWorn() or TyresOverheated())
-    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.CRITICAL)
-    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
+not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
 then
     insert(new Recommendation(
         RecommendationType.PIT_STOP,
@@ -87,8 +84,7 @@ rule "Recommend pit for weak performance"
     salience 40
 when
     WeakCarPerformance()
-    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.CRITICAL)
-    not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
+not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
 then
     insert(new Recommendation(
         RecommendationType.PIT_STOP,
@@ -103,7 +99,6 @@ rule "Recommend early wet pit"
     salience 20
 when
     WetEarlyPitRecommended()
-    not Recommendation(type == RecommendationType.PIT_STOP)
 then
     insert(new Recommendation(
         RecommendationType.PIT_STOP,
@@ -118,7 +113,6 @@ rule "Warn about incident"
     salience 100
 when
     IncidentDetected()
-    not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Incident detected from g-force spike and speed drop.")
 then
     insert(new Recommendation(
         RecommendationType.SAFETY_ALERT,
@@ -133,7 +127,6 @@ rule "Warn yellow flag penalty risk"
     salience 90
 when
     PenaltyRisk()
-    not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Yellow flag active; slow down immediately to avoid penalty.")
 then
     insert(new Recommendation(
         RecommendationType.SAFETY_ALERT,
@@ -148,7 +141,6 @@ rule "Warn about suspension damage"
     salience 80
 when
     PossibleSuspensionDamage()
-    not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Possible suspension damage; avoid kerbs and report handling.")
 then
     insert(new Recommendation(
         RecommendationType.SAFETY_ALERT,
@@ -163,7 +155,6 @@ rule "Warn about increased failure risk"
     salience 70
 when
     IncreasedFailureRisk()
-    not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Keep current performance, but failure risk is increased.")
 then
     insert(new Recommendation(
         RecommendationType.SAFETY_ALERT,
@@ -178,8 +169,7 @@ rule "Warn about brake overheating"
     salience 60
 when
     BrakeOverheating()
-    not Recommendation(type == RecommendationType.SAFETY_ALERT, urgency == Urgency.CRITICAL)
-    not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Brake overheating detected; manage brake temperatures.")
+not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Brake overheating detected; manage brake temperatures.")
 then
     insert(new Recommendation(
         RecommendationType.SAFETY_ALERT,
@@ -194,7 +184,6 @@ rule "Block attack mode recommendation"
     salience 100
 when
     AttackModeBlocked()
-    not Recommendation(type == RecommendationType.ENGINE_MODE)
 then
     insert(new Recommendation(
         RecommendationType.ENGINE_MODE,
@@ -209,7 +198,6 @@ rule "Recommend engine cooling"
     salience 60
 when
     EngineCoolingRequired()
-    not Recommendation(type == RecommendationType.ENGINE_MODE)
 then
     insert(new Recommendation(
         RecommendationType.ENGINE_MODE,
@@ -224,7 +212,6 @@ rule "Recommend restart attack mode"
     salience 40
 when
     RestartAttackMode()
-    not Recommendation(type == RecommendationType.ENGINE_MODE)
 then
     insert(new Recommendation(
         RecommendationType.ENGINE_MODE,
@@ -239,7 +226,6 @@ rule "Recommend ERS overtake"
     salience 100
 when
     ErsOvertakeAvailable()
-    not Recommendation(type == RecommendationType.ERS_MODE)
 then
     insert(new Recommendation(
         RecommendationType.ERS_MODE,
@@ -254,7 +240,6 @@ rule "Recommend blue flag compliance"
     salience 100
 when
     BlueFlagInstructionRequired()
-    not Recommendation(type == RecommendationType.DRIVER_INSTRUCTION)
 then
     insert(new Recommendation(
         RecommendationType.DRIVER_INSTRUCTION,
@@ -269,7 +254,6 @@ rule "Recommend clean air for cooling"
     salience 80
 when
     EngineCoolingWithCleanAirInstruction()
-    not Recommendation(type == RecommendationType.DRIVER_INSTRUCTION)
 then
     insert(new Recommendation(
         RecommendationType.DRIVER_INSTRUCTION,
@@ -284,7 +268,6 @@ rule "Recommend tyre warmup"
     salience 40
 when
     TyresCold()
-    not Recommendation(type == RecommendationType.DRIVER_INSTRUCTION)
 then
     insert(new Recommendation(
         RecommendationType.DRIVER_INSTRUCTION,
@@ -299,7 +282,6 @@ rule "Recommend final lap full defense"
     salience 100
 when
     FullResourceDefense()
-    not Recommendation(type == RecommendationType.STRATEGY)
 then
     insert(new Recommendation(
         RecommendationType.STRATEGY,
@@ -314,7 +296,6 @@ rule "Recommend extreme fuel saving"
     salience 80
 when
     ExtremeFuelSavingStrategy()
-    not Recommendation(type == RecommendationType.STRATEGY)
 then
     insert(new Recommendation(
         RecommendationType.STRATEGY,
@@ -329,7 +310,6 @@ rule "Recommend fuel saving defensive strategy"
     salience 70
 when
     FuelSavingDefensiveStrategy()
-    not Recommendation(type == RecommendationType.STRATEGY)
 then
     insert(new Recommendation(
         RecommendationType.STRATEGY,
@@ -344,7 +324,6 @@ rule "Recommend delaying wet pit"
     salience 40
 when
     DelayPitStopRecommended()
-    not Recommendation(type == RecommendationType.STRATEGY)
 then
     insert(new Recommendation(
         RecommendationType.STRATEGY,
@@ -359,7 +338,6 @@ rule "Recommend DRS and overtake mode"
     salience 20
 when
     OvertakeOpportunity()
-    not Recommendation(type == RecommendationType.STRATEGY)
 then
     insert(new Recommendation(
         RecommendationType.STRATEGY,
@@ -373,7 +351,6 @@ end
 rule "Warn engineer about critical fuel"
 when
     FuelCritical()
-    not Recommendation(type == RecommendationType.WARNING, message == "Fuel consumption is above plan; monitor fuel target.")
 then
     insert(new Recommendation(
         RecommendationType.WARNING,
@@ -387,7 +364,6 @@ end
 rule "Warn engineer about engine overheating"
 when
     EngineOverheating()
-    not Recommendation(type == RecommendationType.WARNING, message == "Engine temperature is above the safe limit.")
 then
     insert(new Recommendation(
         RecommendationType.WARNING,
@@ -401,7 +377,6 @@ end
 rule "Warn about worn tyres"
 when
     TyresWorn()
-    not Recommendation(type == RecommendationType.WARNING, message == "Current tyre set is beyond the configured maximum lap count.")
 then
     insert(new Recommendation(
         RecommendationType.WARNING,
@@ -415,7 +390,6 @@ end
 rule "Warn about overheated tyres"
 when
     TyresOverheated()
-    not Recommendation(type == RecommendationType.WARNING, message == "Tyres are above the critical temperature threshold.")
 then
     insert(new Recommendation(
         RecommendationType.WARNING,
@@ -429,7 +403,6 @@ end
 rule "Warn about rain risk"
 when
     RainRiskWarning()
-    not Recommendation(type == RecommendationType.WARNING, message == "Dry track with high rain probability; prepare reactive strategy.")
 then
     insert(new Recommendation(
         RecommendationType.WARNING,
