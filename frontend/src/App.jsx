@@ -39,7 +39,6 @@ const defaultForm = {
   lapsOnSet: 5,
   tyreTemperatureCelsius: 85,
   tyrePressureBar: 21.4,
-  asphaltTemperatureCelsius: 34,
   rainProbabilityPercentage: 0,
   trackCondition: 'DRY',
   weatherTrend: 'STABLE',
@@ -99,7 +98,6 @@ function buildUpdatePayload(form) {
       averagePressureBar: numberValue(form.tyrePressureBar),
     },
     weatherStatus: {
-      asphaltTemperatureCelsius: numberValue(form.asphaltTemperatureCelsius),
       rainProbabilityPercentage: numberValue(form.rainProbabilityPercentage),
       trackCondition: form.trackCondition,
       weatherTrend: form.weatherTrend,
