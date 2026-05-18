@@ -53,7 +53,6 @@ rule "Recommend cheap safety car pit stop"
     salience 80
 when
     CheapPitStopOpportunity()
-not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
 then
     insert(new Recommendation(
         RecommendationType.PIT_STOP,
@@ -70,7 +69,6 @@ when
     PitWindowAvailable()
     PaceDropDetected()
     (TyresWorn() or TyresOverheated())
-not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
 then
     insert(new Recommendation(
         RecommendationType.PIT_STOP,
@@ -85,7 +83,6 @@ rule "Recommend pit for weak performance"
     salience 40
 when
     WeakCarPerformance()
-not Recommendation(type == RecommendationType.PIT_STOP, urgency == Urgency.HIGH)
 then
     insert(new Recommendation(
         RecommendationType.PIT_STOP,
@@ -184,7 +181,6 @@ rule "Warn about brake overheating"
     salience 60
 when
     BrakeOverheating()
-not Recommendation(type == RecommendationType.SAFETY_ALERT, message == "Brake overheating detected; manage brake temperatures.")
 then
     insert(new Recommendation(
         RecommendationType.SAFETY_ALERT,
