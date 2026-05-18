@@ -1,23 +1,36 @@
 package rules;
 
 import com.ftn.sbnz.f1.model.enums.TrackCondition;
+import com.ftn.sbnz.f1.model.enums.TyreCompound;
 import com.ftn.sbnz.f1.model.enums.WeatherTrend;
 import com.ftn.sbnz.f1.model.facts.DelayPitStopRecommended;
 import com.ftn.sbnz.f1.model.facts.RainRiskWarning;
+import com.ftn.sbnz.f1.model.facts.TyreStatus;
 import com.ftn.sbnz.f1.model.facts.WeatherStatus;
 import com.ftn.sbnz.f1.model.facts.WetEarlyPitRecommended;
 
-rule "Recommend early pit for intensifying rain"
+rule "Recommend intermediate tyres for intensifying rain"
 when
     WeatherStatus(trackCondition == TrackCondition.PARTIALLY_WET, weatherTrend == WeatherTrend.RAIN_INTENSIFYING)
+    TyreStatus(compound != TyreCompound.INTERMEDIATE, compound != TyreCompound.WET)
     not WetEarlyPitRecommended()
 then
-    insert(new WetEarlyPitRecommended());
+    insert(new WetEarlyPitRecommended(TyreCompound.INTERMEDIATE));
+end
+
+rule "Recommend wet tyres for intensifying rain"
+when
+    WeatherStatus(trackCondition == TrackCondition.WET, weatherTrend == WeatherTrend.RAIN_INTENSIFYING)
+    TyreStatus(compound != TyreCompound.WET)
+    not WetEarlyPitRecommended()
+then
+    insert(new WetEarlyPitRecommended(TyreCompound.WET));
 end
 
 rule "Recommend delaying pit while track is drying"
 when
     WeatherStatus(trackCondition == TrackCondition.WET, weatherTrend == WeatherTrend.DRYING)
+    TyreStatus(compound == TyreCompound.INTERMEDIATE || compound == TyreCompound.WET)
     not DelayPitStopRecommended()
 then
     insert(new DelayPitStopRecommended());

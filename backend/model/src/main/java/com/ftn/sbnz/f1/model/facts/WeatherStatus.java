@@ -11,9 +11,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class WeatherStatus {
     private double asphaltTemperatureCelsius;
-    private double humidityPercentage;
     private double rainProbabilityPercentage;
-    private double rainIntensity;
     private TrackCondition trackCondition;
     private WeatherTrend weatherTrend;
 }

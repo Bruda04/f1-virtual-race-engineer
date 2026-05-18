@@ -3,6 +3,7 @@ package rules;
 import com.ftn.sbnz.f1.model.enums.EngineMode;
 import com.ftn.sbnz.f1.model.enums.ErsMode;
 import com.ftn.sbnz.f1.model.enums.RecommendationType;
+import com.ftn.sbnz.f1.model.enums.TyreCompound;
 import com.ftn.sbnz.f1.model.enums.Urgency;
 import com.ftn.sbnz.f1.model.facts.AttackModeBlocked;
 import com.ftn.sbnz.f1.model.facts.BlueFlagInstructionRequired;
@@ -95,15 +96,29 @@ then
     ));
 end
 
-rule "Recommend early wet pit"
+rule "Recommend intermediate tyre pit"
     salience 20
 when
-    WetEarlyPitRecommended()
+    WetEarlyPitRecommended(targetCompound == TyreCompound.INTERMEDIATE)
 then
     insert(new Recommendation(
         RecommendationType.PIT_STOP,
         Urgency.MEDIUM,
-        "Rain is intensifying on a partially wet track; consider early pit.",
+        "Rain is intensifying on a partially wet track; pit for intermediate tyres.",
+        EngineMode.NORMAL,
+        ErsMode.NORMAL
+    ));
+end
+
+rule "Recommend wet tyre pit"
+    salience 20
+when
+    WetEarlyPitRecommended(targetCompound == TyreCompound.WET)
+then
+    insert(new Recommendation(
+        RecommendationType.PIT_STOP,
+        Urgency.MEDIUM,
+        "Rain is intensifying on a wet track; pit for full wet tyres.",
         EngineMode.NORMAL,
         ErsMode.NORMAL
     ));

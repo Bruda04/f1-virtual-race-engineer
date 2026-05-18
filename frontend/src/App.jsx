@@ -10,6 +10,12 @@ const trackConditions = ['DRY', 'PARTIALLY_WET', 'WET']
 const weatherTrends = ['STABLE', 'RAIN_INTENSIFYING', 'RAIN_WEAKENING', 'DRYING']
 const tyreCompounds = ['SOFT', 'MEDIUM', 'HARD', 'INTERMEDIATE', 'WET']
 const driverIssues = ['NONE', 'STEERING_VIBRATION', 'BRAKE_PROBLEM', 'LOSS_OF_POWER']
+const safetyCarModes = [
+  { value: 'NONE', label: 'None' },
+  { value: 'SAFETY_CAR', label: 'Safety Car' },
+  { value: 'VIRTUAL_SC', label: 'Virtual SC' },
+  { value: 'SC_ENDED', label: 'SC ended' },
+]
 
 const nowIso = () => new Date().toISOString()
 
@@ -24,8 +30,6 @@ const defaultForm = {
   lateralGForce: 2.0,
   longitudinalGForce: 1.0,
   ersBatteryPercentage: 40,
-  currentFuelKg: 35,
-  plannedFuelKg: 36,
   consumptionDeltaKgPerLap: 0.05,
   engineTemperatureCelsius: 100,
   inDirtyAir: false,
@@ -36,9 +40,7 @@ const defaultForm = {
   tyreTemperatureCelsius: 85,
   tyrePressureBar: 21.4,
   asphaltTemperatureCelsius: 34,
-  humidityPercentage: 62,
   rainProbabilityPercentage: 0,
-  rainIntensity: 0,
   trackCondition: 'DRY',
   weatherTrend: 'STABLE',
   flagStatus: 'GREEN',
@@ -49,8 +51,6 @@ const defaultForm = {
   gapAheadSeconds: 2.0,
   gapBehindSeconds: 3.0,
   wouldExitAheadAfterPit: false,
-  driverBehindVeryClose: false,
-  beingLapped: false,
   driverIssue: 'NONE',
   driverNote: 'Hammer Time.',
   asymmetricCorneringGForces: false,
@@ -73,15 +73,16 @@ const scenarios = {
     trackCondition: 'PARTIALLY_WET',
     weatherTrend: 'RAIN_INTENSIFYING',
     rainProbabilityPercentage: 88,
-    rainIntensity: 0.6,
     flagStatus: 'GREEN',
     safetyCarActive: false,
     virtualSafetyCarActive: false,
+    safetyCarRecentlyEnded: false,
   },
   safety: {
     flagStatus: 'YELLOW',
     safetyCarActive: true,
     virtualSafetyCarActive: false,
+    safetyCarRecentlyEnded: false,
     driverSlowedForYellowFlag: true,
     lapsOnSet: 18,
     consumptionDeltaKgPerLap: 0.2,
@@ -123,8 +124,6 @@ function buildUpdatePayload(form) {
       ersBatteryPercentage: numberValue(form.ersBatteryPercentage),
     },
     fuelStatus: {
-      currentFuelKg: numberValue(form.currentFuelKg),
-      plannedFuelKg: numberValue(form.plannedFuelKg),
       consumptionDeltaKgPerLap: numberValue(form.consumptionDeltaKgPerLap),
     },
     engineStatus: {
@@ -143,9 +142,7 @@ function buildUpdatePayload(form) {
     },
     weatherStatus: {
       asphaltTemperatureCelsius: numberValue(form.asphaltTemperatureCelsius),
-      humidityPercentage: numberValue(form.humidityPercentage),
       rainProbabilityPercentage: numberValue(form.rainProbabilityPercentage),
-      rainIntensity: numberValue(form.rainIntensity),
       trackCondition: form.trackCondition,
       weatherTrend: form.weatherTrend,
     },
@@ -160,8 +157,6 @@ function buildUpdatePayload(form) {
       gapAheadSeconds: numberValue(form.gapAheadSeconds),
       gapBehindSeconds: numberValue(form.gapBehindSeconds),
       wouldExitAheadAfterPit: form.wouldExitAheadAfterPit,
-      driverBehindVeryClose: form.driverBehindVeryClose,
-      beingLapped: form.beingLapped,
     },
     driverReport: {
       issue: form.driverIssue,
@@ -248,6 +243,28 @@ function SelectField({ label, value, onChange, options }) {
   )
 }
 
+function RadioGroup({ label, value, onChange, options }) {
+  return (
+      <fieldset className="radio-group">
+        <legend>{label}</legend>
+        <div>
+          {options.map((option) => (
+              <label key={option.value} className="radio-option">
+                <input
+                    type="radio"
+                    name={label}
+                    value={option.value}
+                    checked={value === option.value}
+                    onChange={(e) => onChange(e.target.value)}
+                />
+                <span>{option.label}</span>
+              </label>
+          ))}
+        </div>
+      </fieldset>
+  )
+}
+
 function Toggle({ label, checked, onChange }) {
   return (
       <label className="toggle">
@@ -324,9 +341,21 @@ function App() {
 
   const remainingLaps = useMemo(() => Math.max(0, Number(form.totalLaps) - Number(form.currentLap)), [form])
   const criticalCount = response.recommendations.filter((item) => item.urgency === 'CRITICAL').length
+  const safetyCarMode = form.safetyCarActive
+      ? 'SAFETY_CAR'
+      : form.virtualSafetyCarActive
+          ? 'VIRTUAL_SC'
+          : form.safetyCarRecentlyEnded
+              ? 'SC_ENDED'
+              : 'NONE'
 
   const patchForm = (patch) => setForm((current) => ({ ...current, ...patch }))
   const setField = (field) => (value) => patchForm({ [field]: value })
+  const setSafetyCarMode = (value) => patchForm({
+    safetyCarActive: value === 'SAFETY_CAR',
+    virtualSafetyCarActive: value === 'VIRTUAL_SC',
+    safetyCarRecentlyEnded: value === 'SC_ENDED',
+  })
 
   const runAction = async (action, label) => {
     setBusy(true)
@@ -366,12 +395,6 @@ function App() {
         })
         setResponse(result || { recommendations: [], derivedFacts: [] })
       }, 'Sending telemetry')
-
-  const fireRules = () =>
-      runAction(async () => {
-        const result = await apiRequest('/api/race/fire', { method: 'POST' })
-        setResponse(result || { recommendations: [], derivedFacts: [] })
-      }, 'Evaluating rules')
 
   const clearSession = () =>
       runAction(async () => {
@@ -584,9 +607,6 @@ function App() {
               <button type="button" className="primary-button wide" onClick={() => updateRace(null)} disabled={busy}>
                 {busyAction === 'Sending telemetry' ? 'Sending...' : 'Send Update'}
               </button>
-              <button type="button" className="ghost-button wide" onClick={fireRules} disabled={busy}>
-                {busyAction === 'Evaluating rules' ? 'Evaluating...' : 'Fire Rules'}
-              </button>
             </section>
           </aside>
 
@@ -609,7 +629,6 @@ function App() {
                 <Field label="Longitudinal G" value={form.longitudinalGForce} onChange={setField('longitudinalGForce')} />
                 <Field label="ERS battery %" value={form.ersBatteryPercentage} onChange={setField('ersBatteryPercentage')} min="0" max="100" step="1" />
                 <Field label="Fuel delta kg/lap" value={form.consumptionDeltaKgPerLap} onChange={setField('consumptionDeltaKgPerLap')} />
-                <Field label="Current fuel kg" value={form.currentFuelKg} onChange={setField('currentFuelKg')} />
                 <Field label="Engine temp C" value={form.engineTemperatureCelsius} onChange={setField('engineTemperatureCelsius')} />
                 <Field label="Brake temp C" value={form.brakeTemperatureCelsius} onChange={setField('brakeTemperatureCelsius')} />
                 <Field label="Tyre temp C" value={form.tyreTemperatureCelsius} onChange={setField('tyreTemperatureCelsius')} />
@@ -642,14 +661,9 @@ function App() {
               <SelectField label="Flag" value={form.flagStatus} onChange={setField('flagStatus')} options={flagStatuses} />
               <SelectField label="Condition" value={form.trackCondition} onChange={setField('trackCondition')} options={trackConditions} />
               <SelectField label="Weather trend" value={form.weatherTrend} onChange={setField('weatherTrend')} options={weatherTrends} />
-              <div className="split">
-                <Field label="Rain %" value={form.rainProbabilityPercentage} onChange={setField('rainProbabilityPercentage')} min="0" max="100" />
-                <Field label="Humidity %" value={form.humidityPercentage} onChange={setField('humidityPercentage')} min="0" max="100" />
-              </div>
+              <Field label="Rain %" value={form.rainProbabilityPercentage} onChange={setField('rainProbabilityPercentage')} min="0" max="100" />
+              <RadioGroup label="SC status" value={safetyCarMode} onChange={setSafetyCarMode} options={safetyCarModes} />
               <div className="toggle-row stacked">
-                <Toggle label="Safety Car" checked={form.safetyCarActive} onChange={setField('safetyCarActive')} />
-                <Toggle label="Virtual SC" checked={form.virtualSafetyCarActive} onChange={setField('virtualSafetyCarActive')} />
-                <Toggle label="SC ended" checked={form.safetyCarRecentlyEnded} onChange={setField('safetyCarRecentlyEnded')} />
                 <Toggle label="Slowed for yellow" checked={form.driverSlowedForYellowFlag} onChange={setField('driverSlowedForYellowFlag')} />
               </div>
             </section>
@@ -662,8 +676,6 @@ function App() {
               </div>
               <div className="toggle-row stacked">
                 <Toggle label="Exit ahead after pit" checked={form.wouldExitAheadAfterPit} onChange={setField('wouldExitAheadAfterPit')} />
-                <Toggle label="Behind very close" checked={form.driverBehindVeryClose} onChange={setField('driverBehindVeryClose')} />
-                <Toggle label="Being lapped" checked={form.beingLapped} onChange={setField('beingLapped')} />
               </div>
             </section>
 
