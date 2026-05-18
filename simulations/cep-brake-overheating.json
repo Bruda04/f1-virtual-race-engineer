@@ -1,0 +1,73 @@
+[
+  {
+    "_label": "Lap 20 - clean brake baseline",
+    "_form": {
+      "sessionStartTime": "2026-01-01T14:00:00.000Z",
+      "eventTimestamp": "2026-01-01T14:00:01.000Z",
+      "trackProfile": "Default",
+      "currentLap": 20,
+      "totalLaps": 58,
+      "criticalPhase": false,
+      "speedKmh": 280,
+      "lateralGForce": 2,
+      "longitudinalGForce": 1,
+      "ersBatteryPercentage": 40,
+      "consumptionDeltaKgPerLap": 0.05,
+      "engineTemperatureCelsius": 100,
+      "inDirtyAir": false,
+      "attemptingOvertake": false,
+      "brakeTemperatureCelsius": 700,
+      "tyreCompound": "MEDIUM",
+      "lapsOnSet": 8,
+      "tyreTemperatureCelsius": 85,
+      "tyrePressureBar": 21.4,
+      "asphaltTemperatureCelsius": 34,
+      "rainProbabilityPercentage": 0,
+      "trackCondition": "DRY",
+      "weatherTrend": "STABLE",
+      "flagStatus": "GREEN",
+      "safetyCarActive": false,
+      "virtualSafetyCarActive": false,
+      "safetyCarRecentlyEnded": false,
+      "driverSlowedForYellowFlag": false,
+      "gapAheadSeconds": 2,
+      "gapBehindSeconds": 3,
+      "wouldExitAheadAfterPit": false,
+      "driverIssue": "NONE",
+      "driverNote": "Brake temperatures are stable.",
+      "asymmetricCorneringGForces": false
+    }
+  },
+  {
+    "_label": "Lap 20 - first hot brake sample",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:02.000Z",
+      "brakeTemperatureCelsius": 910,
+      "driverNote": "Brake temperatures are above the safe range."
+    }
+  },
+  {
+    "_label": "Lap 20 - hot brakes sustained for five seconds",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:07.000Z",
+      "brakeTemperatureCelsius": 915,
+      "driverNote": "Brake overheating has been sustained across the CEP window."
+    }
+  },
+  {
+    "_label": "Lap 20 - three hot brake samples",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:10.000Z",
+      "brakeTemperatureCelsius": 920,
+      "driverNote": "Three-sample brake average is above the critical threshold."
+    }
+  },
+  {
+    "_label": "Lap 20 - brake temperatures recovered after CEP window",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:22.000Z",
+      "brakeTemperatureCelsius": 700,
+      "driverNote": "Brake temperatures are safe again after hot events expired."
+    }
+  }
+]

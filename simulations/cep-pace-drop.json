@@ -1,0 +1,87 @@
+[
+  {
+    "_label": "Lap 20 - baseline lap pace",
+    "_form": {
+      "sessionStartTime": "2026-01-01T14:00:00.000Z",
+      "eventTimestamp": "2026-01-01T14:00:01.000Z",
+      "trackProfile": "Default",
+      "currentLap": 20,
+      "totalLaps": 58,
+      "criticalPhase": false,
+      "speedKmh": 280,
+      "lateralGForce": 2,
+      "longitudinalGForce": 1,
+      "ersBatteryPercentage": 40,
+      "consumptionDeltaKgPerLap": 0.05,
+      "engineTemperatureCelsius": 100,
+      "inDirtyAir": false,
+      "attemptingOvertake": false,
+      "brakeTemperatureCelsius": 700,
+      "tyreCompound": "MEDIUM",
+      "lapsOnSet": 20,
+      "tyreTemperatureCelsius": 85,
+      "tyrePressureBar": 21.4,
+      "asphaltTemperatureCelsius": 34,
+      "rainProbabilityPercentage": 0,
+      "trackCondition": "DRY",
+      "weatherTrend": "STABLE",
+      "flagStatus": "GREEN",
+      "safetyCarActive": false,
+      "virtualSafetyCarActive": false,
+      "safetyCarRecentlyEnded": false,
+      "driverSlowedForYellowFlag": false,
+      "gapAheadSeconds": 2,
+      "gapBehindSeconds": 3,
+      "wouldExitAheadAfterPit": false,
+      "driverIssue": "NONE",
+      "driverNote": "Baseline pace.",
+      "asymmetricCorneringGForces": false
+    }
+  },
+  {
+    "_label": "Lap 21 - small pace loss",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:01:30.000Z",
+      "currentLap": 21,
+      "lapsOnSet": 24,
+      "driverNote": "Pace is starting to drop."
+    }
+  },
+  {
+    "_label": "Lap 22 - three-lap pace drop with worn tyres",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:03:00.000Z",
+      "currentLap": 22,
+      "lapsOnSet": 35,
+      "driverNote": "Pace drop is now above the configured threshold."
+    }
+  },
+  {
+    "_label": "Lap 23 - pit stop reset begins",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:04:30.000Z",
+      "currentLap": 23,
+      "lapsOnSet": 1,
+      "wouldExitAheadAfterPit": false,
+      "driverNote": "New tyre set fitted; pace history is starting to reset."
+    }
+  },
+  {
+    "_label": "Lap 24 - second stable lap after reset",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:06:00.000Z",
+      "currentLap": 24,
+      "lapsOnSet": 2,
+      "driverNote": "Second stable lap on the new tyre set."
+    }
+  },
+  {
+    "_label": "Lap 25 - pace drop cleared after three stable laps",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:07:30.000Z",
+      "currentLap": 25,
+      "lapsOnSet": 3,
+      "driverNote": "Three stable lap events replace the old pace-drop window."
+    }
+  }
+]

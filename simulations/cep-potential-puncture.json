@@ -1,0 +1,57 @@
+[
+  {
+    "_label": "Lap 20 - stable tyre pressure",
+    "_form": {
+      "sessionStartTime": "2026-01-01T14:00:00.000Z",
+      "eventTimestamp": "2026-01-01T14:00:01.000Z",
+      "trackProfile": "Default",
+      "currentLap": 20,
+      "totalLaps": 58,
+      "criticalPhase": false,
+      "speedKmh": 280,
+      "lateralGForce": 2,
+      "longitudinalGForce": 1,
+      "ersBatteryPercentage": 40,
+      "consumptionDeltaKgPerLap": 0.05,
+      "engineTemperatureCelsius": 100,
+      "inDirtyAir": false,
+      "attemptingOvertake": false,
+      "brakeTemperatureCelsius": 700,
+      "tyreCompound": "MEDIUM",
+      "lapsOnSet": 8,
+      "tyreTemperatureCelsius": 85,
+      "tyrePressureBar": 21.4,
+      "asphaltTemperatureCelsius": 34,
+      "rainProbabilityPercentage": 0,
+      "trackCondition": "DRY",
+      "weatherTrend": "STABLE",
+      "flagStatus": "GREEN",
+      "safetyCarActive": false,
+      "virtualSafetyCarActive": false,
+      "safetyCarRecentlyEnded": false,
+      "driverSlowedForYellowFlag": false,
+      "gapAheadSeconds": 2,
+      "gapBehindSeconds": 3,
+      "wouldExitAheadAfterPit": false,
+      "driverIssue": "NONE",
+      "driverNote": "Tyre pressures stable.",
+      "asymmetricCorneringGForces": false
+    }
+  },
+  {
+    "_label": "Lap 20 - sudden pressure drop within 10 seconds",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:07.000Z",
+      "tyrePressureBar": 21,
+      "driverNote": "Pressure drop detected on the current tyre set."
+    }
+  },
+  {
+    "_label": "Lap 20 - pressure recovered after puncture window",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:20.000Z",
+      "tyrePressureBar": 21.4,
+      "driverNote": "Pressure is stable again after the 10-second puncture window."
+    }
+  }
+]

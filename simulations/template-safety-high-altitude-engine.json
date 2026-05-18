@@ -1,0 +1,133 @@
+[
+  {
+    "_label": "RUN 1 - HighAltitudeTrack clean baseline",
+    "_form": {
+      "sessionStartTime": "2026-01-01T14:00:00.000Z",
+      "eventTimestamp": "2026-01-01T14:00:01.000Z",
+      "trackProfile": "HighAltitudeTrack",
+      "currentLap": 20,
+      "totalLaps": 58,
+      "criticalPhase": false,
+      "speedKmh": 280,
+      "lateralGForce": 2,
+      "longitudinalGForce": 1,
+      "ersBatteryPercentage": 40,
+      "consumptionDeltaKgPerLap": 0.05,
+      "engineTemperatureCelsius": 100,
+      "inDirtyAir": false,
+      "attemptingOvertake": false,
+      "brakeTemperatureCelsius": 700,
+      "tyreCompound": "MEDIUM",
+      "lapsOnSet": 8,
+      "tyreTemperatureCelsius": 85,
+      "tyrePressureBar": 21.4,
+      "asphaltTemperatureCelsius": 34,
+      "rainProbabilityPercentage": 0,
+      "trackCondition": "DRY",
+      "weatherTrend": "STABLE",
+      "flagStatus": "GREEN",
+      "safetyCarActive": false,
+      "virtualSafetyCarActive": false,
+      "safetyCarRecentlyEnded": false,
+      "driverSlowedForYellowFlag": false,
+      "gapAheadSeconds": 2,
+      "gapBehindSeconds": 3,
+      "wouldExitAheadAfterPit": false,
+      "driverIssue": "NONE",
+      "driverNote": "HighAltitudeTrack engine limit is 110 C; 100 C is safe.",
+      "asymmetricCorneringGForces": false
+    }
+  },
+  {
+    "_label": "RUN 1 - HighAltitudeTrack triggers at 112 C",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:08.000Z",
+      "engineTemperatureCelsius": 112,
+      "driverNote": "112 C is above the HighAltitudeTrack engine limit of 110 C."
+    }
+  },
+  {
+    "_label": "RUN 1 - HighAltitudeTrack recovery",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:00:20.000Z",
+      "engineTemperatureCelsius": 100,
+      "driverNote": "Engine temperature is safe again. Clear and Start before RUN 2."
+    }
+  },
+  {
+    "_label": "RUN 2 - Default clean baseline after Start",
+    "_form": {
+      "sessionStartTime": "2026-01-01T14:10:00.000Z",
+      "eventTimestamp": "2026-01-01T14:10:01.000Z",
+      "trackProfile": "Default",
+      "currentLap": 20,
+      "engineTemperatureCelsius": 100,
+      "brakeTemperatureCelsius": 700,
+      "tyreTemperatureCelsius": 85,
+      "tyrePressureBar": 21.4,
+      "lapsOnSet": 8,
+      "speedKmh": 280,
+      "lateralGForce": 2,
+      "longitudinalGForce": 1,
+      "driverNote": "Default engine limit is 115 C; 100 C is safe."
+    }
+  },
+  {
+    "_label": "RUN 2 - Default does not trigger at 112 C",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:10:08.000Z",
+      "engineTemperatureCelsius": 112,
+      "driverNote": "112 C is below the Default engine limit of 115 C, so no engine overheating should appear."
+    }
+  },
+  {
+    "_label": "RUN 2 - Default triggers at 116 C",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:10:16.000Z",
+      "engineTemperatureCelsius": 116,
+      "driverNote": "116 C is above the Default engine limit of 115 C."
+    }
+  },
+  {
+    "_label": "RUN 2 - Default recovery",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:10:28.000Z",
+      "engineTemperatureCelsius": 100,
+      "driverNote": "Engine temperature is safe again. Clear and Start before RUN 3."
+    }
+  },
+  {
+    "_label": "RUN 3 - LowDegradationTrack clean baseline after Start",
+    "_form": {
+      "sessionStartTime": "2026-01-01T14:20:00.000Z",
+      "eventTimestamp": "2026-01-01T14:20:01.000Z",
+      "trackProfile": "LowDegradationTrack",
+      "currentLap": 20,
+      "engineTemperatureCelsius": 100,
+      "brakeTemperatureCelsius": 700,
+      "tyreTemperatureCelsius": 85,
+      "tyrePressureBar": 21.4,
+      "lapsOnSet": 8,
+      "speedKmh": 280,
+      "lateralGForce": 2,
+      "longitudinalGForce": 1,
+      "driverNote": "LowDegradationTrack engine limit is 116 C; 100 C is safe."
+    }
+  },
+  {
+    "_label": "RUN 3 - LowDegradationTrack does not trigger at 116 C",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:20:08.000Z",
+      "engineTemperatureCelsius": 116,
+      "driverNote": "The rule uses greater-than, so exactly 116 C does not trigger on LowDegradationTrack."
+    }
+  },
+  {
+    "_label": "RUN 3 - LowDegradationTrack triggers at 117 C",
+    "_form": {
+      "eventTimestamp": "2026-01-01T14:20:16.000Z",
+      "engineTemperatureCelsius": 117,
+      "driverNote": "117 C is above the LowDegradationTrack engine limit of 116 C."
+    }
+  }
+]
