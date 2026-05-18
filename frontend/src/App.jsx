@@ -56,48 +56,6 @@ const defaultForm = {
   asymmetricCorneringGForces: false,
 }
 
-const scenarios = {
-  attack: {
-    flagStatus: 'GREEN',
-    safetyCarActive: false,
-    virtualSafetyCarActive: false,
-    safetyCarRecentlyEnded: false,
-    gapAheadSeconds: 0.7,
-    ersBatteryPercentage: 72,
-    attemptingOvertake: true,
-    inDirtyAir: false,
-    driverIssue: 'NONE',
-    asymmetricCorneringGForces: false,
-  },
-  rain: {
-    trackCondition: 'PARTIALLY_WET',
-    weatherTrend: 'RAIN_INTENSIFYING',
-    rainProbabilityPercentage: 88,
-    flagStatus: 'GREEN',
-    safetyCarActive: false,
-    virtualSafetyCarActive: false,
-    safetyCarRecentlyEnded: false,
-  },
-  safety: {
-    flagStatus: 'YELLOW',
-    safetyCarActive: true,
-    virtualSafetyCarActive: false,
-    safetyCarRecentlyEnded: false,
-    driverSlowedForYellowFlag: true,
-    lapsOnSet: 18,
-    consumptionDeltaKgPerLap: 0.2,
-  },
-  failure: {
-    engineTemperatureCelsius: 121,
-    brakeTemperatureCelsius: 955,
-    tyreTemperatureCelsius: 111,
-    inDirtyAir: true,
-    attemptingOvertake: true,
-    driverIssue: 'STEERING_VIBRATION',
-    asymmetricCorneringGForces: true,
-  },
-}
-
 function numberValue(value) {
   return Number(value)
 }
@@ -526,18 +484,6 @@ function App() {
                 <Field label="Total laps" value={form.totalLaps} onChange={setField('totalLaps')} min="1" step="1" />
               </div>
               <Toggle label="Critical phase" checked={form.criticalPhase} onChange={setField('criticalPhase')} />
-            </section>
-
-            <section className="panel">
-              <div className="panel-heading">
-                <h2>Scenarios</h2>
-              </div>
-              <div className="scenario-grid">
-                <button type="button" onClick={() => patchForm(scenarios.attack)}>Attack</button>
-                <button type="button" onClick={() => patchForm(scenarios.rain)}>Rain</button>
-                <button type="button" onClick={() => patchForm(scenarios.safety)}>SC</button>
-                <button type="button" onClick={() => patchForm(scenarios.failure)}>Risk</button>
-              </div>
             </section>
 
             <section className="panel action-panel">

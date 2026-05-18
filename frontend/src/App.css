@@ -104,8 +104,7 @@ h2 {
 }
 
 .primary-button,
-.ghost-button,
-.scenario-grid button {
+.ghost-button {
   border: 1px solid transparent;
   border-radius: 6px;
   color: #f8fafc;
@@ -119,15 +118,13 @@ h2 {
   box-shadow: 0 12px 30px rgba(213, 32, 47, 0.26);
 }
 
-.ghost-button,
-.scenario-grid button {
+.ghost-button {
   background: #1a2027;
   border-color: #2b3541;
 }
 
 .primary-button:hover,
-.ghost-button:hover,
-.scenario-grid button:hover {
+.ghost-button:hover {
   transform: translateY(-1px);
 }
 
@@ -304,12 +301,6 @@ h2 {
   accent-color: #d5202f;
   height: 16px;
   width: 16px;
-}
-
-.scenario-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 8px;
 }
 
 .action-panel {
