@@ -11,6 +11,4 @@ public class CompetitorStatus {
     private double gapAheadSeconds;
     private double gapBehindSeconds;
     private boolean wouldExitAheadAfterPit;
-    private boolean driverBehindVeryClose;
-    private boolean beingLapped;
 }

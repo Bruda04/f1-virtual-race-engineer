@@ -8,7 +8,5 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FuelStatus {
-    private double currentFuelKg;
-    private double plannedFuelKg;
     private double consumptionDeltaKgPerLap;
 }
